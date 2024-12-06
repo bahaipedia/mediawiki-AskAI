@@ -5,7 +5,11 @@
 		]
 	},
 
-	"action-moderation": "{{doc-action|askai}}",
+	"action-askai": "{{doc-action|askai}}",
+	"askai": "Title of the page Special:AI.",
 	"askai-desc": "{{desc|name=AskAI|url=https://www.mediawiki.org/wiki/Extension:AskAI}}",
-	"right-askai": "{{doc-right|askai}}\nAllows to use Special:AI."
+	"askai-field-pages": "Label of field for the list of pages/paragraphs.",
+	"askai-field-prompt": "Label of field for a question to the AI.:",
+	"askai-field-response": "Label of readonly field that will show the response from the AI.",
+	"right-askai": "{{doc-right|askai}}\nAllows to use Special:AI.",
 }

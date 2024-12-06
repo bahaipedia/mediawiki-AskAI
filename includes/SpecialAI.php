@@ -44,9 +44,22 @@ class SpecialAI extends FormSpecialPage {
 	/** @inheritDoc */
 	protected function getFormFields() {
 		return [
+			'pagesAndParagraphs' => [
+				'type' => 'textarea',
+				'rows' => 5,
+				'label-message' => 'askai-field-pages',
+				'required' => true
+			],
+			'response' => [
+				'type' => 'textarea',
+				'rows' => 10,
+				'label-message' => 'askai-field-response',
+				'readonly' => true
+			],
 			'prompt' => [
 				'type' => 'text',
-				'required' => true,
+				'label-message' => 'askai-field-prompt',
+				'required' => true
 			]
 		];
 	}
@@ -58,7 +71,7 @@ class SpecialAI extends FormSpecialPage {
 	/** @inheritDoc */
 	public function onSubmit( array $data ) {
 		$ai = ServiceFactory::getAI();
-		$response = $ai->query( $data['prompt'] );
+		$response = $ai->query( $data['prompt'], $data['pagesAndParagraphs'] );
 
 		$this->getOutput()->addHTML( Xml::element( 'div', [], $response ) );
 

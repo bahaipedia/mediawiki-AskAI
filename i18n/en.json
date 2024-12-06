@@ -8,5 +8,8 @@
 	"action-askai": "use [[Special:AI]]",
 	"askai": "AI",
 	"askai-desc": "Provides [[Special:AI]], which allows user to make AI queries about content of articles in this wiki.",
+	"askai-field-pages": "List of wiki pages (and paragraphs in them) to be analyzed by the AI:",
+	"askai-field-prompt": "Question to ask:",
+	"askai-field-response": "Response from the AI:",
 	"right-askai": "Send queries to Special:AI."
 }
