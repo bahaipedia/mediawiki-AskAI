@@ -18,7 +18,10 @@
 		}
 	},
 	"AutoloadClasses": {
-		"MediaWiki\\AskAI\\SpecialAI": "includes/SpecialAI.php"
+		"MediaWiki\\AskAI\\SpecialAI": "includes/SpecialAI.php",
+		"MediaWiki\\AskAI\\Service\\IExternalService": "includes/Service/IExternalService.php",
+		"MediaWiki\\AskAI\\Service\\OpenAI": "includes/Service/OpenAI.php",
+		"MediaWiki\\AskAI\\Service\\ServiceFactory": "includes/Service/ServiceFactory.php"
 	},
 	"ExtensionMessagesFiles": {
 		"AIAlias": "AskAI.alias.php"
@@ -29,17 +32,17 @@
 		]
 	},
 	"config": {
-		"AskAIService": {
-			"description": "Parameters of the external AI service.",
+		"AskAIServiceClass": {
+			"value": "MediaWiki\\AskAI\\Service\\OpenAI",
+			"description": "Name of class that implements external service (such as OpenAI)."
+		},
+		"AskAIServiceOptionsOpenAI": {
+			"description": "Parameters of external service OpenAI (ChatGPT).",
 			"value": {
-				"type": "openai",
 				"apiUrl": "https://api.openai.com/v1/chat/completions",
+				"apiKey": "",
 				"model": "gpt-3.5-turbo"
 			}
-		},
-		"AskAIApiKey": {
-			"value": "",
-			"description": "API key for the external AI service."
 		}
 	},
 	"ResourceModules": {

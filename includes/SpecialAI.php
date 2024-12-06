@@ -25,7 +25,9 @@ namespace MediaWiki\AskAI;
 
 use FormSpecialPage;
 use HTMLForm;
+use MediaWiki\AskAI\Service\ServiceFactory;
 use Status;
+use Xml;
 
 /**
  * Implements [[Special:AI]].
@@ -42,6 +44,10 @@ class SpecialAI extends FormSpecialPage {
 	/** @inheritDoc */
 	protected function getFormFields() {
 		return [
+			'prompt' => [
+				'type' => 'text',
+				'required' => true,
+			]
 		];
 	}
 
@@ -51,6 +57,11 @@ class SpecialAI extends FormSpecialPage {
 
 	/** @inheritDoc */
 	public function onSubmit( array $data ) {
+		$ai = ServiceFactory::getAI();
+		$response = $ai->query( $data['prompt'] );
+
+		$this->getOutput()->addHTML( Xml::element( 'div', [], $response ) );
+
 		return Status::newGood();
 	}
 
