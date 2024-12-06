@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Edward Chernenko"
+		]
+	},
+
+	"action-moderation": "{{doc-action|askai}}",
+	"askai-desc": "{{desc|name=AskAI|url=https://www.mediawiki.org/wiki/Extension:AskAI}}",
+	"right-askai": "{{doc-right|askai}}\nAllows to use Special:AI."
+}

@@ -1,0 +1,66 @@
+{
+	"name": "AskAI",
+	"version": "0.0.1",
+	"author": "Edward Chernenko",
+	"url": "https://www.mediawiki.org/wiki/Extension:AskAI",
+	"descriptionmsg": "askai-desc",
+	"license-name": "GPL-2.0+",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"type": "other",
+	"AvailableRights": [
+		"askai"
+	],
+	"GroupPermissions": {
+		"sysop": {
+			"askai": true
+		}
+	},
+	"AutoloadClasses": {
+		"MediaWiki\\AskAI\\SpecialAI": "includes/SpecialAI.php"
+	},
+	"ExtensionMessagesFiles": {
+		"AIAlias": "AskAI.alias.php"
+	},
+	"MessagesDirs": {
+		"AskAI": [
+			"i18n"
+		]
+	},
+	"config": {
+		"AskAIService": {
+			"description": "Parameters of the external AI service.",
+			"value": {
+				"type": "openai",
+				"apiUrl": "https://api.openai.com/v1/chat/completions",
+				"model": "gpt-3.5-turbo"
+			}
+		},
+		"AskAIApiKey": {
+			"value": "",
+			"description": "API key for the external AI service."
+		}
+	},
+	"ResourceModules": {
+		"ext.askai": {
+			"scripts": [
+				"ext.askai.js"
+			],
+			"targets": [
+				"desktop",
+				"mobile"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "modules",
+		"remoteExtPath": "AskAI/modules"
+	},
+	"SpecialPages": {
+		"AI": {
+			"class": "MediaWiki\\AskAI\\SpecialAI"
+		}
+	},
+	"manifest_version": 2
+}

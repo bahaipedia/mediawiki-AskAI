@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Edward Chernenko"
+		]
+	},
+
+	"action-askai": "use [[Special:AI]]",
+	"askai": "AI",
+	"askai-desc": "Provides [[Special:AI]], which allows user to make AI queries about content of articles in this wiki.",
+	"right-askai": "Send queries to Special:AI."
+}
