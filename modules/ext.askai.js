@@ -12,7 +12,7 @@ $( function () {
 		// List of pages isn't useful to the AI (it doesn't know what to do with it),
 		// we need to retrieve the text of paragraphs (e.g. [[Some page#p6-8]])
 		// and send this text to AI as a part of instructions (not the user-chosen Prompt).
-		const promises = $pages.val().split( '\n' ).map( function ( pageName ) {
+		const promises = $pages.val().split( '\n' ).map( ( pageName ) => {
 			let title;
 			try {
 				title = new mw.Title( pageName );
@@ -26,10 +26,10 @@ $( function () {
 
 			if ( fragment && fragment.match( /^p[0-9\-,]+$/ ) ) {
 				// Anchor is the list of paragraphs, e.g. "p4", or "p6-8", or "p3,5,7".
-				fragment.slice( 1 ).split( ',' ).forEach( function ( pair ) {
+				fragment.slice( 1 ).split( ',' ).forEach( ( pair ) => {
 					const range = pair.split( '-' ),
-						start = range[ 0 ],
-						end = range.length > 1 ? range[ 1 ] : start;
+						start = parseInt( range[ 0 ] ),
+						end = parseInt( range.length > 1 ? range[ 1 ] : start );
 
 					for ( let idx = start; idx <= end; idx++ ) {
 						parNumbers.add( idx );
@@ -39,7 +39,7 @@ $( function () {
 
 			const $d = $.Deferred();
 
-			$.get( title.getUrl() ).done( function ( html ) {
+			$.get( title.getUrl() ).done( ( html ) => {
 				const $paragraphs = $( '<div>' ).append( html ).find( '.mw-parser-output > p' );
 
 				let extract;
@@ -48,7 +48,7 @@ $( function () {
 					extract = $paragraphs.toArray();
 				} else {
 					extract = [];
-					Array.from( parNumbers ).sort().forEach( function ( idx ) {
+					[ ...parNumbers ].sort( ( a, b ) => a - b ).forEach( ( idx ) => {
 						const p = $paragraphs[ idx ];
 						if ( p ) {
 							extract.push( p );
@@ -58,7 +58,7 @@ $( function () {
 
 				$d.resolve( {
 					title: title,
-					extract: extract.map( function ( p ) {
+					extract: extract.map( ( p ) => {
 						return p.innerText.trim();
 					} ).join( '\n\n' )
 				} );
@@ -68,17 +68,13 @@ $( function () {
 		} );
 
 		// Accumulate the results into 1 string.
-		return Promise.all( promises ).then( function ( pageResults ) {
-			return pageResults.map( function ( ret, idx ) {
-				let text = '(Source #' + ( idx + 1 ) + ') [' +
-					ret.title.getPrefixedText();
-
-				if ( ret.title.fragment ) {
-					text += '#' + ret.title.fragment;
-				}
-
-				text += ']\n\n' + ret.extract;
-				return text;
+		return Promise.all( promises ).then( ( pageResults ) => {
+			return pageResults.filter( ( x ) => x.extract ).map( ( ret, idx ) => {
+				const fragment = ret.title.fragment;
+				return mw.msg( 'askai-source',
+					idx + 1,
+					ret.title.getPrefixedText() + ( fragment ? '#' + fragment : '' )
+				) + '\n\n' + ret.extract;
 			} ).join( '\n\n' );
 		} );
 	}
@@ -88,11 +84,11 @@ $( function () {
 			wpExtract: extract,
 			wpPrompt: $prompt.val(),
 			wpEditToken: token
-		} ).fail( function ( xhr ) {
+		} ).fail( ( xhr ) => {
 			$response.val( mw.msg( 'askai-submit-failed',
 				xhr.statusText + ' (' + url + ')'
 			) );
-		} ).done( function ( ret ) {
+		} ).done( ( ret ) => {
 			$response.val( $( '<div>' ).append( ret ).find( '#mw-askai-response' ).text() );
 		} );
 	}

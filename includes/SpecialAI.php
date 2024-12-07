@@ -80,7 +80,10 @@ class SpecialAI extends FormSpecialPage {
 			return Status::newFatal( 'askai-unknown-service' );
 		}
 
-		$response = $ai->query( $data['Prompt'], $data['Extract'] );
+		$response = $ai->query(
+			$data['Prompt'],
+			$this->msg( 'askai-default-instructions' )->plain() . "\n\n" . $data['Extract']
+		);
 
 		$this->getOutput()->disable();
 		echo Xml::element( 'div', [
