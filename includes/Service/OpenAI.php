@@ -67,7 +67,7 @@ class OpenAI implements IExternalService {
 	 */
 	public function query( $prompt, $instructions = '' ) {
 		if ( !$this->isConfigured ) {
-			return 'Error: not configured: apiKey, apiUrl or model are not set.';
+			return wfMessage( 'askai-openai-not-configured' )->plain();
 		}
 
 		$postData = FormatJson::encode( [

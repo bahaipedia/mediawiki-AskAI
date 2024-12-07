@@ -20,6 +20,7 @@
 	"AutoloadClasses": {
 		"MediaWiki\\AskAI\\SpecialAI": "includes/SpecialAI.php",
 		"MediaWiki\\AskAI\\Service\\IExternalService": "includes/Service/IExternalService.php",
+		"MediaWiki\\AskAI\\Service\\DebugService": "includes/Service/DebugService.php",
 		"MediaWiki\\AskAI\\Service\\OpenAI": "includes/Service/OpenAI.php",
 		"MediaWiki\\AskAI\\Service\\ServiceFactory": "includes/Service/ServiceFactory.php"
 	},

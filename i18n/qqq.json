@@ -7,9 +7,14 @@
 
 	"action-askai": "{{doc-action|askai}}",
 	"askai": "Title of the page Special:AI.",
+	"askai-debug-header": "Header shown before results of Special:AI if the response was provided by DebugService, not real AI.",
+	"askai-debug-instructions": "Label shown by DebugService before the instructions received by the AI.",
+	"askai-debug-prompt": "Label shown by DebugService before the question received by the AI.",
 	"askai-desc": "{{desc|name=AskAI|url=https://www.mediawiki.org/wiki/Extension:AskAI}}",
 	"askai-field-pages": "Label of field for the list of pages/paragraphs.",
 	"askai-field-prompt": "Label of field for a question to the AI.:",
 	"askai-field-response": "Label of readonly field that will show the response from the AI.",
+	"askai-openai-not-configured": "Error message if OpenAI API key, etc. are not configured.",
+	"askai-unknown-service": "Error message if failed to create an AI service.",
 	"right-askai": "{{doc-right|askai}}\nAllows to use Special:AI.",
 }

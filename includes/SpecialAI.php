@@ -71,9 +71,15 @@ class SpecialAI extends FormSpecialPage {
 	/** @inheritDoc */
 	public function onSubmit( array $data ) {
 		$ai = ServiceFactory::getAI();
+		if ( !$ai ) {
+			return Status::newFatal( 'askai-unknown-service' );
+		}
+
 		$response = $ai->query( $data['prompt'], $data['pagesAndParagraphs'] );
 
-		$this->getOutput()->addHTML( Xml::element( 'div', [], $response ) );
+		$this->getOutput()->addHTML( Xml::element( 'div', [
+			'style' => 'white-space: pre-wrap'
+		], $response ) );
 
 		return Status::newGood();
 	}
