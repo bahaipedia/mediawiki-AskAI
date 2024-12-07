@@ -1,7 +1,7 @@
 {
 	"root": true,
 	"extends": [
-		"wikimedia/client",
+		"wikimedia/client-es6",
 		"wikimedia/jquery",
 		"wikimedia/mediawiki"
 	],
@@ -11,6 +11,7 @@
 	"rules": {
 		"no-jquery/no-event-shorthand": "off",
 		"no-jquery/no-global-selector": "off",
-		"no-console": "off"
+		"no-console": "off",
+		"compat/compat": "off"
 	}
 }

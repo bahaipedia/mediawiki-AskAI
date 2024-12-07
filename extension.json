@@ -57,6 +57,9 @@
 			],
 			"messages": [
 				"askai-submit-failed"
+			],
+			"dependencies": [
+				"mediawiki.Title"
 			]
 		}
 	},

@@ -60,6 +60,9 @@ class SpecialAI extends FormSpecialPage {
 				'type' => 'text',
 				'label-message' => 'askai-field-prompt',
 				'required' => true
+			],
+			'Extract' => [
+				'type' => 'hidden'
 			]
 		];
 	}
@@ -77,7 +80,7 @@ class SpecialAI extends FormSpecialPage {
 			return Status::newFatal( 'askai-unknown-service' );
 		}
 
-		$response = $ai->query( $data['Prompt'], $data['Pages'] );
+		$response = $ai->query( $data['Prompt'], $data['Extract'] );
 
 		$this->getOutput()->disable();
 		echo Xml::element( 'div', [
