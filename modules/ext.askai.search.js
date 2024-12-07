@@ -1,8 +1,8 @@
 /* Shows "Add to AI chat" link near every search result on Special:Search. */
 
 $( function () {
-	const $results = $( '.mw-search-result' );
-	if ( !$results.length ) {
+	const $snippets = $( '.searchresult' );
+	if ( !$snippets.length ) {
 		return;
 	}
 
@@ -60,8 +60,8 @@ $( function () {
 	}
 
 	// Every result should have "Add to AI chat" link
-	$results.each( ( idx, result ) => {
-		$( result ).find( '.mw-search-result-data' ).append( ' ', $( '<a>' )
+	$snippets.each( ( idx, result ) => {
+		$( result ).next( '.mw-search-result-data' ).append( ' ', $( '<a>' )
 			.attr( 'class', 'mw-askai-search-add' )
 			.append( mw.msg( 'askai-search-add' ) )
 			.click( addToAI )
