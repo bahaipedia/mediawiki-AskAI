@@ -18,11 +18,20 @@
 		}
 	},
 	"AutoloadClasses": {
+		"MediaWiki\\AskAI\\Hooks": "includes/Hooks.php",
 		"MediaWiki\\AskAI\\SpecialAI": "includes/SpecialAI.php",
 		"MediaWiki\\AskAI\\Service\\IExternalService": "includes/Service/IExternalService.php",
 		"MediaWiki\\AskAI\\Service\\DebugService": "includes/Service/DebugService.php",
 		"MediaWiki\\AskAI\\Service\\OpenAI": "includes/Service/OpenAI.php",
 		"MediaWiki\\AskAI\\Service\\ServiceFactory": "includes/Service/ServiceFactory.php"
+	},
+	"HookHandlers": {
+		"main": {
+			"class": "MediaWiki\\AskAI\\Hooks"
+		}
+	},
+	"Hooks": {
+		"SpecialSearchResultsPrepend": "main"
 	},
 	"ExtensionMessagesFiles": {
 		"AIAlias": "AskAI.alias.php"
@@ -61,6 +70,22 @@
 			],
 			"dependencies": [
 				"mediawiki.Title"
+			]
+		},
+		"ext.askai.search": {
+			"scripts": [
+				"ext.askai.search.js"
+			],
+			"targets": [
+				"desktop",
+				"mobile"
+			],
+			"messages": [
+				"askai-search-add",
+				"askai-search-adding",
+				"askai-search-add-failed",
+				"askai-search-add-not-found",
+				"askai-search-view"
 			]
 		}
 	},
