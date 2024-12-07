@@ -39,6 +39,8 @@ class Hooks implements SpecialSearchResultsPrependHook {
 	 * @return bool|void
 	 */
 	public function onSpecialSearchResultsPrepend( $specialSearch, $out, $term ) {
-		$out->addModules( 'ext.askai.search' );
+		if ( $out->getContext()->getUser()->isAllowed( 'askai' ) ) {
+			$out->addModules( 'ext.askai.search' );
+		}
 	}
 }
