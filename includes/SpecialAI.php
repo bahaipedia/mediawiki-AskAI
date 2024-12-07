@@ -87,8 +87,7 @@ class SpecialAI extends FormSpecialPage {
 
 		$this->getOutput()->disable();
 		echo Xml::element( 'div', [
-			'id' => 'mw-askai-response',
-			'style' => 'white-space: pre-wrap'
+			'id' => 'mw-askai-response'
 		], $response );
 
 		return Status::newGood();
