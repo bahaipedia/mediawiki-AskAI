@@ -44,19 +44,19 @@ class SpecialAI extends FormSpecialPage {
 	/** @inheritDoc */
 	protected function getFormFields() {
 		return [
-			'pagesAndParagraphs' => [
+			'Pages' => [
 				'type' => 'textarea',
-				'rows' => 5,
+				'rows' => 3,
 				'label-message' => 'askai-field-pages',
 				'required' => true
 			],
-			'response' => [
+			'Response' => [
 				'type' => 'textarea',
-				'rows' => 10,
+				'rows' => 15,
 				'label-message' => 'askai-field-response',
 				'readonly' => true
 			],
-			'prompt' => [
+			'Prompt' => [
 				'type' => 'text',
 				'label-message' => 'askai-field-prompt',
 				'required' => true
@@ -66,6 +66,8 @@ class SpecialAI extends FormSpecialPage {
 
 	/** @inheritDoc */
 	protected function alterForm( HTMLForm $form ) {
+		$form->setId( 'mw-askai' );
+		$this->getOutput()->addModules( 'ext.askai' );
 	}
 
 	/** @inheritDoc */
@@ -75,16 +77,15 @@ class SpecialAI extends FormSpecialPage {
 			return Status::newFatal( 'askai-unknown-service' );
 		}
 
-		$response = $ai->query( $data['prompt'], $data['pagesAndParagraphs'] );
+		$response = $ai->query( $data['Prompt'], $data['Pages'] );
 
-		$this->getOutput()->addHTML( Xml::element( 'div', [
+		$this->getOutput()->disable();
+		echo Xml::element( 'div', [
+			'id' => 'mw-askai-response',
 			'style' => 'white-space: pre-wrap'
-		], $response ) );
+		], $response );
 
 		return Status::newGood();
-	}
-
-	public function onSuccess() {
 	}
 
 	/** @inheritDoc */

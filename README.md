@@ -1,6 +1,6 @@
 Extension:AskAI
 
-This extension add [[Special:AI]],
+This extension adds [[Special:AI]],
 which allows user to make AI queries about content of articles in this wiki.
 
 ## Example configuration

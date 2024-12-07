@@ -96,7 +96,7 @@ class OpenAI implements IExternalService {
 
 		$status = $req->execute();
 		if ( !$status->isOK() ) {
-			return "HTTP request failed: " . $status->getMessage()->plain();
+			return wfMessage( 'askai-openai-failed', $status->getMessage()->plain() );
 		}
 		$ret = FormatJson::decode( $req->getContent(), true );
 

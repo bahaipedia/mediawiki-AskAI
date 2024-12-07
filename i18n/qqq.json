@@ -14,7 +14,9 @@
 	"askai-field-pages": "Label of field for the list of pages/paragraphs.",
 	"askai-field-prompt": "Label of field for a question to the AI.:",
 	"askai-field-response": "Label of readonly field that will show the response from the AI.",
+	"askai-openai-failed": "Error message if HTTP request to OpenAI resulted in an error.",
 	"askai-openai-not-configured": "Error message if OpenAI API key, etc. are not configured.",
+	"askai-submit-failed": "Error message if HTTP POST request to Special:AI resulted in an error.",
 	"askai-unknown-service": "Error message if failed to create an AI service.",
-	"right-askai": "{{doc-right|askai}}\nAllows to use Special:AI.",
+	"right-askai": "{{doc-right|askai}}\nAllows to use Special:AI."
 }

@@ -54,6 +54,9 @@
 			"targets": [
 				"desktop",
 				"mobile"
+			],
+			"messages": [
+				"askai-submit-failed"
 			]
 		}
 	},
