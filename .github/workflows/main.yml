@@ -18,10 +18,13 @@ jobs:
             tools: composer
       - uses: actions/cache@v4
         with:
-          path: ~/.composer/cache
+          path: |
+            ~/.composer/cache
+            ~/.npm
           key: buildcache-linter
-      - run: sudo apt-get install -y composer && composer install
+      - run: sudo apt-get install -y composer && composer install && npm install
       - run: composer test
+      - run: npm test
 
   # Phan (PHP static analyzer)
   phan:
