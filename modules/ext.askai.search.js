@@ -16,6 +16,44 @@ $( function () {
 		} ) );
 	}
 
+	/**
+	 * Compress list of paragraph numbers to shortest form,
+	 * e.g. 1,2,3,4,5,6,7,10,11,12,15 to 1-7,10-12,15.
+	 *
+	 * @param {number[]} numbers
+	 * @return {string}
+	 */
+	function condenseParNumbers( numbers ) {
+		let next = numbers[ 0 ];
+		const ranges = [ {
+			start: next,
+			end: next
+		} ];
+
+		for ( let i = 1; i < numbers.length; i++ ) {
+			next = numbers[ i ];
+
+			if ( next === ranges[ ranges.length - 1 ].end + 1 ) {
+				// This number can be added to existing range.
+				ranges[ ranges.length - 1 ].end = next;
+			} else {
+				ranges.push( { start: next, end: next } );
+			}
+		}
+
+		const condensed = [];
+		for ( const range of ranges ) {
+			const rangeLen = range.end - range.start;
+			if ( rangeLen === 0 ) {
+				// Only 1 number.
+				condensed.push( range.start );
+			} else {
+				condensed.push( range.start + ( rangeLen === 1 ? ',' : '-' ) + range.end );
+			}
+		}
+		return condensed.join( ',' );
+	}
+
 	/* Handler of "Add to AI chat" link */
 	function addToAI() {
 		const $addLink = $( this ),
@@ -47,7 +85,7 @@ $( function () {
 				return;
 			}
 
-			addedSources.push( pageLink.title + '#p' + parNumbers.join( ',' ) );
+			addedSources.push( pageLink.title + '#p' + condenseParNumbers( parNumbers ) );
 
 			$loading.replaceWith( $( '<a>' )
 				.attr( 'class', 'mw-askai-search-view' )
