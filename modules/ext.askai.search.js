@@ -6,14 +6,14 @@ $( function () {
 		return;
 	}
 
-	const addedSources = [];
+	const addedSources = [],
+		specialTitle = new mw.Title( 'Special:AI' );
 
-	/* Redirect to Special:AI, providing it with the previously added sources */
-	function goToSpecial() {
-		const title = new mw.Title( 'Special:AI' );
-		window.location.href = title.getUrl( {
+	/* Update all links to Special:AI to include previously added sources */
+	function updateGotoLinks() {
+		$( '.mw-askai-search-view' ).attr( 'href', specialTitle.getUrl( {
 			wpPages: addedSources.join( '\n' )
-		} );
+		} ) );
 	}
 
 	/* Handler of "Add to AI chat" link */
@@ -52,8 +52,8 @@ $( function () {
 			$loading.replaceWith( $( '<a>' )
 				.attr( 'class', 'mw-askai-search-view' )
 				.append( mw.msg( 'askai-search-view' ) )
-				.click( goToSpecial )
 			);
+			updateGotoLinks();
 		} ).fail( () => {
 			$loading.replaceWith( mw.msg( 'askai-search-add-failed' ) );
 		} );
