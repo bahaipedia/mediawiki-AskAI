@@ -70,6 +70,7 @@ class SpecialAI extends FormSpecialPage {
 	/** @inheritDoc */
 	protected function alterForm( HTMLForm $form ) {
 		$form->setId( 'mw-askai' );
+		$form->setSubmitTextMsg( 'askai-submit' );
 
 		$out = $this->getOutput();
 		$out->addModules( 'ext.askai' );

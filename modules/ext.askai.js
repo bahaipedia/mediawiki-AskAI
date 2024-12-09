@@ -80,16 +80,21 @@ $( function () {
 	}
 
 	function sendPrompt( extract ) {
+		const prompt = $prompt.val();
 		$.post( url, {
 			wpExtract: extract,
-			wpPrompt: $prompt.val(),
+			wpPrompt: prompt,
 			wpEditToken: token
 		} ).fail( ( xhr ) => {
 			$response.val( mw.msg( 'askai-submit-failed',
 				xhr.statusText + ' (' + url + ')'
 			) );
 		} ).done( ( ret ) => {
-			$response.val( $( '<div>' ).append( ret ).find( '#mw-askai-response' ).text() );
+			$response.val(
+				'>>> ' + prompt + '\n' +
+				$( '<div>' ).append( ret ).find( '#mw-askai-response' ).text() +
+				'\n\n' + $response.val()
+			);
 		} );
 	}
 

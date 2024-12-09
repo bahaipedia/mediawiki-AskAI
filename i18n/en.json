@@ -22,6 +22,7 @@
 	"askai-search-add-failed": "Failed to load the page.",
 	"askai-search-add-not-found": "Failed to locate the paragraphs that are referenced in this search result.",
 	"askai-search-view": "View AI chat",
+	"askai-submit": "Chat",
 	"askai-source": "(Source #$1) [$2]",
 	"askai-submit-failed": "HTTP error when submitting the form: $1",
 	"askai-unknown-service": "Not configured: incorrect value of $wgAskAIServiceClass.",
