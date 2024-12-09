@@ -23,14 +23,27 @@
 
 namespace MediaWiki\AskAI;
 
+use MediaWiki\Hook\BeforePageDisplayHook;
 use MediaWiki\Hook\SpecialSearchResultsPrependHook;
 use OutputPage;
+use Skin;
 use SpecialSearch;
 
 /**
  * Hooks of Extension:AskAI.
  */
-class Hooks implements SpecialSearchResultsPrependHook {
+class Hooks implements BeforePageDisplayHook, SpecialSearchResultsPrependHook {
+	/**
+	 * Add "addparlinks" module to articles.
+	 *
+	 * @param OutputPage $out
+	 * @param Skin $skin
+	 * @return void
+	 */
+	public function onBeforePageDisplay( $out, $skin ): void {
+		$out->addModules( 'ext.askai.addparlinks' );
+	}
+
 	/**
 	 * Add our JavaScript module to Special:Search.
 	 * @param SpecialSearch $specialSearch

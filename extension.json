@@ -31,6 +31,7 @@
 		}
 	},
 	"Hooks": {
+		"BeforePageDisplay": "main",
 		"SpecialSearchResultsPrepend": "main"
 	},
 	"ExtensionMessagesFiles": {
@@ -95,6 +96,15 @@
 				"askai-search-add-failed",
 				"askai-search-add-not-found",
 				"askai-search-view"
+			]
+		},
+		"ext.askai.addparlinks": {
+			"scripts": [
+				"ext.askai.addparlinks.js"
+			],
+			"targets": [
+				"desktop",
+				"mobile"
 			]
 		}
 	},
