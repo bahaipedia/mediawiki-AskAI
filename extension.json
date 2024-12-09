@@ -72,6 +72,15 @@
 				"mediawiki.Title"
 			]
 		},
+		"ext.askai.css": {
+			"styles": [
+				"ext.askai.css"
+			],
+			"targets": [
+				"desktop",
+				"mobile"
+			]
+		},
 		"ext.askai.search": {
 			"scripts": [
 				"ext.askai.search.js"
