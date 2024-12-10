@@ -84,7 +84,8 @@
 		},
 		"ext.askai.search": {
 			"scripts": [
-				"ext.askai.search.js"
+				"ext.askai.search.js",
+				"ext.askai.findpar.js"
 			],
 			"targets": [
 				"desktop",
