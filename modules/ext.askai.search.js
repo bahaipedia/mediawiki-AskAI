@@ -77,21 +77,13 @@ $( function () {
 
 		$addLink.replaceWith( $loading );
 
-		// Download the article and find the paragraph(s) that contain "matchedText".
-		$.get( pageLink.href ).done( ( html ) => {
-			const parNumbers = mw.askai.findpar(
-				snippet,
-				$( '<div>' ).append( html )
-			);
-
-			if ( !parNumbers.length ) {
-				$loading.replaceWith( mw.msg( 'askai-search-add-not-found' ) );
-				return;
-			}
-
-			addedSources.push( pageLink.title + '#p' + condenseParNumbers( parNumbers ) );
-			replaceWithViewLink( $loading );
-		} ).fail( () => {
+		/**
+		 * Replace $loading with "Add the entire page" link.
+		 * This is fallback behavior for when paragraph numbers weren't found.
+		 *
+		 * @param {mw.Message} reasonMsg
+		 */
+		function showAddPageLink( reasonMsg ) {
 			const $addPageLink = $( '<a>' )
 				.attr( 'class', 'mw-askai-search-add-page' )
 				.append( mw.msg( 'askai-search-add-page' ) )
@@ -103,11 +95,29 @@ $( function () {
 			$loading.replaceWith( $( '<span>' )
 				.attr( 'class', 'mw-askai-search-failed' )
 				.append(
-					mw.msg( 'askai-search-add-failed' ),
+					reasonMsg,
 					' ',
 					$addPageLink
 				)
 			);
+		}
+
+		// Download the article and find the paragraph(s) that contain "matchedText".
+		$.get( pageLink.href ).done( ( html ) => {
+			const parNumbers = mw.askai.findpar(
+				snippet,
+				$( '<div>' ).append( html )
+			);
+
+			if ( !parNumbers.length ) {
+				showAddPageLink( mw.msg( 'askai-search-add-not-found' ) );
+				return;
+			}
+
+			addedSources.push( pageLink.title + '#p' + condenseParNumbers( parNumbers ) );
+			replaceWithViewLink( $loading );
+		} ).fail( () => {
+			showAddPageLink( mw.msg( 'askai-search-add-failed' ) );
 		} );
 	}
 
