@@ -90,12 +90,11 @@ $( function () {
 				xhr.statusText + ' (' + url + ')'
 			) );
 		} ).done( ( ret ) => {
-			$response.val(
+			$response.val( $response.val() + '\n\n' +
 				'>>> ' + prompt + '\n' +
-				$( '<div>' ).append( ret ).find( '#mw-askai-response' ).text() +
-				'\n\n' + $response.val()
+				$( '<div>' ).append( ret ).find( '#mw-askai-response' ).text()
 			);
-			$response.scrollTop( 0 );
+			$response.scrollTop( $response[ 0 ].scrollHeight );
 		} );
 	}
 
