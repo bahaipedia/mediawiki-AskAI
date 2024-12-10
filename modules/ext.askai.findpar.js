@@ -25,7 +25,7 @@
 	 */
 	function getParNumbers( $paragraphs ) {
 		return $paragraphs.map( ( idx, par ) => {
-			return parseInt( $( par ).find( '.showsectionlink' ).attr( 'id' ).replace( /^p/, '' ) );
+			return parseInt( $( par ).data( 'parNumber' ) );
 		} ).toArray();
 	}
 
@@ -37,6 +37,11 @@
 	 * @return {number[]} E.g. [ 20, 21, 22, 34, 35 ].
 	 */
 	function findText( textToFind, $paragraphs ) {
+		$paragraphs.each( function ( idx, par ) {
+			// Remember the number that each paragraph has. Used in getParNumbers().
+			$( par ).data( 'parNumber', idx );
+		} );
+
 		let words = textToFind.split( /\s+/ );
 
 		const results = [];

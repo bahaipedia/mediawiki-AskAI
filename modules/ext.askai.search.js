@@ -69,7 +69,7 @@ $( function () {
 		const $addLink = $( this ),
 			$res = $addLink.parents( '.mw-search-result' ),
 			pageLink = $res.find( 'a' )[ 0 ],
-			matchedSentences = $res.find( '.searchresult' ).text().trim().split( /\.\s/ );
+			snippet = $res.find( '.searchresult' ).text().trim();
 
 		const $loading = $( '<span>' )
 			.attr( 'class', 'mw-askai-search-adding' )
@@ -79,16 +79,10 @@ $( function () {
 
 		// Download the article and find the paragraph(s) that contain "matchedText".
 		$.get( pageLink.href ).done( ( html ) => {
-			const parNumbers = [];
-
-			$( '<div>' ).append( html ).find( '.mw-parser-output > p' ).each( ( idx, p ) => {
-				for ( const sentence of matchedSentences ) {
-					if ( p.innerText.indexOf( sentence ) !== -1 ) {
-						parNumbers.push( idx );
-						return;
-					}
-				}
-			} );
+			const parNumbers = mw.askai.findpar(
+				snippet,
+				$( '<div>' ).append( html )
+			);
 
 			if ( !parNumbers.length ) {
 				$loading.replaceWith( mw.msg( 'askai-search-add-not-found' ) );
