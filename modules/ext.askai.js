@@ -95,6 +95,7 @@ $( function () {
 				$( '<div>' ).append( ret ).find( '#mw-askai-response' ).text() +
 				'\n\n' + $response.val()
 			);
+			$response.scrollTop( 0 );
 		} );
 	}
 
