@@ -21,6 +21,7 @@
 	"askai-search-adding": "Temporarily shown while waiting for result to be added to AI chat.",
 	"askai-search-add-failed": "Error when we couldn't load the page from the search results.",
 	"askai-search-add-not-found": "Error when the text from search results wasn't found anywhere in the article.",
+	"askai-search-add-page": "Link on Special:Search that adds the entire page to AI chat.",
 	"askai-search-view": "Link on Special:Search that redirects user to Special:AI.",
 	"askai-source": "Name of source document (will be supplied to AI as part of instructions). $1 - index of document (1, 2, 3, etc.), $2 - page name.",
 	"askai-submit": "Label of Submit button on Special:AI.",

@@ -19,6 +19,7 @@
 	"askai-openai-not-configured": "Error: OpenAI not configured: apiKey, apiUrl or model are not set.",
 	"askai-search-add": "Add to AI chat",
 	"askai-search-adding": "Adding...",
+	"askai-search-add-page": "Add the entire page",
 	"askai-search-add-failed": "Failed to load the page.",
 	"askai-search-add-not-found": "Failed to locate the paragraphs that are referenced in this search result.",
 	"askai-search-view": "View AI chat",

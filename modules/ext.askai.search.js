@@ -9,13 +9,6 @@ $( function () {
 	const addedSources = [],
 		specialTitle = new mw.Title( 'Special:AI' );
 
-	/* Update all links to Special:AI to include previously added sources */
-	function updateGotoLinks() {
-		$( '.mw-askai-search-view' ).attr( 'href', specialTitle.getUrl( {
-			wpPages: addedSources.join( '\n' )
-		} ) );
-	}
-
 	/**
 	 * Compress list of paragraph numbers to shortest form,
 	 * e.g. 1,2,3,4,5,6,7,10,11,12,15 to 1-7,10-12,15.
@@ -54,6 +47,23 @@ $( function () {
 		return condensed.join( ',' );
 	}
 
+	/**
+	 * Replace element $elem with "View AI chat" link.
+	 *
+	 * @param {jQuery} $elem
+	 */
+	function replaceWithViewLink( $elem ) {
+		$elem.replaceWith( $( '<a>' )
+			.attr( 'class', 'mw-askai-search-view' )
+			.append( mw.msg( 'askai-search-view' ) )
+		);
+
+		// Update all links to Special:AI to include previously added sources
+		$( '.mw-askai-search-view' ).attr( 'href', specialTitle.getUrl( {
+			wpPages: addedSources.join( '\n' )
+		} ) );
+	}
+
 	/* Handler of "Add to AI chat" link */
 	function addToAI() {
 		const $addLink = $( this ),
@@ -86,14 +96,24 @@ $( function () {
 			}
 
 			addedSources.push( pageLink.title + '#p' + condenseParNumbers( parNumbers ) );
-
-			$loading.replaceWith( $( '<a>' )
-				.attr( 'class', 'mw-askai-search-view' )
-				.append( mw.msg( 'askai-search-view' ) )
-			);
-			updateGotoLinks();
+			replaceWithViewLink( $loading );
 		} ).fail( () => {
-			$loading.replaceWith( mw.msg( 'askai-search-add-failed' ) );
+			const $addPageLink = $( '<a>' )
+				.attr( 'class', 'mw-askai-search-add-page' )
+				.append( mw.msg( 'askai-search-add-page' ) )
+				.click( function () {
+					addedSources.push( pageLink.title );
+					replaceWithViewLink( $( this ).parent() );
+				} );
+
+			$loading.replaceWith( $( '<span>' )
+				.attr( 'class', 'mw-askai-search-failed' )
+				.append(
+					mw.msg( 'askai-search-add-failed' ),
+					' ',
+					$addPageLink
+				)
+			);
 		} );
 	}
 
