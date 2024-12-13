@@ -1,5 +1,6 @@
 /* Styles for [[Special:AI]] */
 
-#mw-askai .oo-ui-textInputWidget {
+#mw-askai .oo-ui-textInputWidget,
+#mw-askai .oo-ui-actionFieldLayout {
 	max-width: 100%;
 }

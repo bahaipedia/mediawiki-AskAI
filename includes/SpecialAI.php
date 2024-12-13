@@ -57,9 +57,10 @@ class SpecialAI extends FormSpecialPage {
 				'readonly' => true
 			],
 			'Prompt' => [
-				'type' => 'text',
+				'type' => 'textwithbutton',
 				'label-message' => 'askai-field-prompt',
-				'required' => true
+				'required' => true,
+				'buttondefault' => $this->msg( 'askai-submit' )->plain()
 			],
 			'Extract' => [
 				'type' => 'hidden'
@@ -70,7 +71,7 @@ class SpecialAI extends FormSpecialPage {
 	/** @inheritDoc */
 	protected function alterForm( HTMLForm $form ) {
 		$form->setId( 'mw-askai' );
-		$form->setSubmitTextMsg( 'askai-submit' );
+		$form->suppressDefaultSubmit();
 
 		$out = $this->getOutput();
 		$out->addModules( 'ext.askai' );
