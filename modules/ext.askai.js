@@ -79,8 +79,15 @@ $( function () {
 		} );
 	}
 
+	/**
+	 * Send arbitrary question to AI and display the result.
+	 *
+	 * @param {string} extract
+	 */
 	function sendPrompt( extract ) {
 		const prompt = $prompt.val();
+		$prompt.val( '' );
+
 		$.post( url, {
 			wpExtract: extract,
 			wpPrompt: prompt,
