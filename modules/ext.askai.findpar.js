@@ -30,6 +30,16 @@
 	}
 
 	/**
+	 * Remove quotes from string.
+	 *
+	 * @param {string} input
+	 * @return {string}
+	 */
+	function removeQuotes( input ) {
+		return input.replace( /['"]/g, '' );
+	}
+
+	/**
 	 * Returns an array of paragraph numbers that contain specified text.
 	 *
 	 * @param {string} textToFind Arbitrary string, e.g. "Sentence is a sequence of words."
@@ -38,9 +48,17 @@
 	 */
 	function findText( textToFind, $paragraphs ) {
 		$paragraphs.each( function ( idx, par ) {
+			const $p = $( par );
+
 			// Remember the number that each paragraph has. Used in getParNumbers().
-			$( par ).data( 'parNumber', idx );
+			$p.data( 'parNumber', idx );
+
+			// Remove quotes, because CirrusSearch excludes them from the snippet.
+			$p.html( removeQuotes( $p.html() ) );
 		} );
+
+		// Remove quotes from the snippet, so that behavior without CirrusSearch would be the same.
+		textToFind = removeQuotes( textToFind );
 
 		let words = textToFind.split( /\s+/ );
 
