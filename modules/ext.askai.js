@@ -86,16 +86,26 @@ $( function () {
 			wpPrompt: prompt,
 			wpEditToken: token
 		} ).fail( ( xhr ) => {
-			$response.val( mw.msg( 'askai-submit-failed',
+			showResponse( prompt, mw.msg( 'askai-submit-failed',
 				xhr.statusText + ' (' + url + ')'
 			) );
 		} ).done( ( ret ) => {
-			$response.val( $response.val() + '\n\n' +
-				'>>> ' + prompt + '\n' +
-				$( '<div>' ).append( ret ).find( '#mw-askai-response' ).text()
-			);
-			$response.scrollTop( $response[ 0 ].scrollHeight );
+			showResponse( prompt, $( '<div>' ).append( ret ).find( '#mw-askai-response' ).text() );
 		} );
+	}
+
+	/**
+	 * Display AI response to user.
+	 *
+	 * @param {string} prompt
+	 * @param {string} responseText
+	 */
+	function showResponse( prompt, responseText ) {
+		const oldValue = $response.val(),
+			history = oldValue ? ( oldValue + '\n\n' ) : '';
+
+		$response.val( history + '>>> ' + prompt + '\n' + responseText );
+		$response.scrollTop( $response[ 0 ].scrollHeight );
 	}
 
 	function onsubmit( ev ) {
