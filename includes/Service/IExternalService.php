@@ -23,6 +23,8 @@
 
 namespace MediaWiki\AskAI\Service;
 
+use Status;
+
 /**
  * Interface for external services that use AI to respond to arbitrary queries.
  */
@@ -32,7 +34,8 @@ interface IExternalService {
 	 * Send an arbitrary question to AI and return the response.
 	 * @param string $prompt Question to ask.
 	 * @param string $instructions Preferences on how to respond, e.g. "You are a research assistant".
-	 * return string
+	 * @param Status $status If an error happened, implementation must call $status->fatal( 'error-code' )
+	 * @return string|false Text of response (if successful) or false.
 	 */
-	public function query( $prompt, $instructions = '' );
+	public function query( $prompt, $instructions, Status $status );
 }

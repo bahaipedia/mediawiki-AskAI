@@ -16,7 +16,6 @@
 	"askai-field-pages": "List of wiki pages (and paragraphs in them) to be analyzed by the AI:",
 	"askai-field-prompt": "Question to ask:",
 	"askai-field-response": "Response from the AI:",
-	"askai-openai-failed": "Failed to contact OpenAI: $1",
 	"askai-openai-not-configured": "Error: OpenAI not configured: apiKey, apiUrl or model are not set.",
 	"askai-search-add": "Add to AI chat",
 	"askai-search-adding": "Adding...",

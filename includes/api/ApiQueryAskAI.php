@@ -31,6 +31,7 @@ namespace MediaWiki\AskAI;
 use ApiQuery;
 use ApiQueryBase;
 use MediaWiki\AskAI\Service\ServiceFactory;
+use Status;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiQueryAskAI extends ApiQueryBase {
@@ -50,10 +51,15 @@ class ApiQueryAskAI extends ApiQueryBase {
 			$this->dieStatus( Status::newFatal( 'askai-unknown-service' ) );
 		}
 
+		$status = Status::newGood();
 		$response = $ai->query(
 			$params['prompt'],
-			$params['instructions']
+			$params['instructions'],
+			$status
 		);
+		if ( !$status->isOK() ) {
+			$this->dieStatus( $status );
+		}
 
 		$r = [ 'response' => $response ];
 		$this->getResult()->addValue( 'query', $this->getModuleName(), $r );

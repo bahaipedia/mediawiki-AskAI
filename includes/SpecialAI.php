@@ -85,17 +85,23 @@ class SpecialAI extends FormSpecialPage {
 			return Status::newFatal( 'askai-unknown-service' );
 		}
 
+		$status = Status::newGood();
 		$response = $ai->query(
 			$data['Prompt'],
-			$this->msg( 'askai-default-instructions' )->plain() . "\n\n" . $data['Extract']
+			$this->msg( 'askai-default-instructions' )->plain() . "\n\n" . $data['Extract'],
+			$status
 		);
+
+		if ( !$status->isOK() ) {
+			return $status;
+		}
 
 		$this->getOutput()->disable();
 		echo Xml::element( 'div', [
 			'id' => 'mw-askai-response'
 		], $response );
 
-		return Status::newGood();
+		return $status;
 	}
 
 	/** @inheritDoc */

@@ -16,7 +16,6 @@
 	"askai-field-pages": "Label of field for the list of pages/paragraphs.",
 	"askai-field-prompt": "Label of field for a question to the AI.:",
 	"askai-field-response": "Label of readonly field that will show the response from the AI.",
-	"askai-openai-failed": "Error message if HTTP request to OpenAI resulted in an error.",
 	"askai-openai-not-configured": "Error message if OpenAI API key, etc. are not configured.",
 	"askai-search-add": "Link on Special:Search that adds this result to AI chat.",
 	"askai-search-adding": "Temporarily shown while waiting for result to be added to AI chat.",

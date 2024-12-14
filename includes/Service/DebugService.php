@@ -23,6 +23,8 @@
 
 namespace MediaWiki\AskAI\Service;
 
+use Status;
+
 /**
  * Fake service that responds to any prompts with "What did the user request?" information.
  */
@@ -31,9 +33,10 @@ class DebugService implements IExternalService {
 	 * Send an arbitrary question to ChatGPT and return the response.
 	 * @param string $prompt Question to ask.
 	 * @param string $instructions Preferences on how to respond, e.g. "You are a research assistant".
+	 * @param Status $status
 	 * @return string
 	 */
-	public function query( $prompt, $instructions = '' ) {
+	public function query( $prompt, $instructions, Status $status ) {
 		$delim = str_repeat( '-', 80 );
 		$response = wfMessage( 'askai-debug-header' )->plain() . "\n\n" .
 			wfMessage( 'askai-debug-prompt' )->plain() .

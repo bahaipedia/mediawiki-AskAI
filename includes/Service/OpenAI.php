@@ -26,6 +26,7 @@ namespace MediaWiki\AskAI\Service;
 use Config;
 use FormatJson;
 use MediaWiki\MediaWikiServices;
+use Status;
 
 /**
  * External service that uses ChatGPT (OpenAI) API.
@@ -63,11 +64,13 @@ class OpenAI implements IExternalService {
 	 * Send an arbitrary question to ChatGPT and return the response.
 	 * @param string $prompt Question to ask.
 	 * @param string $instructions Preferences on how to respond, e.g. "You are a research assistant".
-	 * @return string
+	 * @param Status $status
+	 * @return string|false
 	 */
-	public function query( $prompt, $instructions = '' ) {
+	public function query( $prompt, $instructions, Status $status ) {
 		if ( !$this->isConfigured ) {
-			return wfMessage( 'askai-openai-not-configured' )->plain();
+			$status->fatal( 'askai-openai-not-configured' );
+			return false;
 		}
 
 		$postData = FormatJson::encode( [
@@ -94,9 +97,10 @@ class OpenAI implements IExternalService {
 		$req->setHeader( 'Authorization', 'Bearer ' . $this->apiKey );
 		$req->setHeader( 'Content-Type', 'application/json' );
 
-		$status = $req->execute();
-		if ( !$status->isOK() ) {
-			return wfMessage( 'askai-openai-failed', $status->getMessage()->plain() );
+		$httpStatus = $req->execute();
+		if ( !$httpStatus->isOK() ) {
+			$status->merge( $httpStatus );
+			return false;
 		}
 		$ret = FormatJson::decode( $req->getContent(), true );
 
