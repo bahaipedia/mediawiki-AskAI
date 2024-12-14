@@ -28,33 +28,26 @@ namespace MediaWiki\AskAI;
  * API to send questions to AI.
  */
 
-use ApiQuery;
 use ApiQueryBase;
 use MediaWiki\AskAI\Service\ServiceFactory;
 use Status;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiQueryAskAI extends ApiQueryBase {
-	/**
-	 * @param ApiQuery $query
-	 * @param string $moduleName
-	 */
-	public function __construct( ApiQuery $query, $moduleName ) {
-		parent::__construct( $query, $moduleName, 'ai' );
-	}
-
 	public function execute() {
-		$params = $this->extractRequestParams();
+		$this->checkUserRightsAny( 'askai' );
 
 		$ai = ServiceFactory::getAI();
 		if ( !$ai ) {
 			$this->dieStatus( Status::newFatal( 'askai-unknown-service' ) );
 		}
 
+		$params = $this->extractRequestParams();
+
 		$status = Status::newGood();
 		$response = $ai->query(
-			$params['prompt'],
-			$params['instructions'],
+			$params['aiprompt'],
+			$params['aiinstructions'],
 			$status
 		);
 		if ( !$status->isOK() ) {
@@ -65,16 +58,26 @@ class ApiQueryAskAI extends ApiQueryBase {
 		$this->getResult()->addValue( 'query', $this->getModuleName(), $r );
 	}
 
+	/** @inheritDoc */
+	public function mustBePosted() {
+		return true;
+	}
+
+	/** @inheritDoc */
+	public function needsToken() {
+		return 'csrf';
+	}
+
 	/**
 	 * @inheritDoc
 	 */
 	public function getAllowedParams() {
 		return [
-			'prompt' => [
+			'aiprompt' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => true
 			],
-			'instructions' => [
+			'aiinstructions' => [
 				ParamValidator::PARAM_TYPE => 'string'
 			]
 		];
@@ -85,9 +88,9 @@ class ApiQueryAskAI extends ApiQueryBase {
 	 */
 	protected function getExamplesMessages() {
 		return [
-			'action=query&prop=askai&aiprompt=What+is+Pi'
+			'action=query&prop=askai&token=123ABC&aiprompt=What+is+Pi'
 				=> 'apihelp-query+askai-example',
-			'action=query&prop=askai&' .
+			'action=query&prop=askai&token=123ABC&' .
 				'aiprompt=What+is+circumference+of+circle+with+radius+1&aiinstructions=Assume+that+Pi+is+4.'
 				=> 'apihelp-query+askai-example-instructions'
 		];
