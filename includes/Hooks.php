@@ -53,7 +53,10 @@ class Hooks implements BeforePageDisplayHook, SpecialSearchResultsPrependHook {
 	 */
 	public function onSpecialSearchResultsPrepend( $specialSearch, $out, $term ) {
 		if ( $out->getContext()->getUser()->isAllowed( 'askai' ) ) {
-			$out->addModules( 'ext.askai.search' );
+			$out->addModules( [
+				'ext.askai.search',
+				'ext.askai.chatwith'
+			] );
 		}
 	}
 }

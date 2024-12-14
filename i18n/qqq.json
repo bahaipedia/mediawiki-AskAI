@@ -7,6 +7,7 @@
 
 	"action-askai": "{{doc-action|askai}}",
 	"askai": "Title of the page Special:AI.",
+	"askai-chatwith-button": "Label of button that submits current search query to \"Chat with AI\" tool.",
 	"askai-debug-header": "Header shown before results of Special:AI if the response was provided by DebugService, not real AI.",
 	"askai-debug-instructions": "Label shown by DebugService before the instructions received by the AI.",
 	"askai-debug-prompt": "Label shown by DebugService before the question received by the AI.",

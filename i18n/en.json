@@ -7,6 +7,7 @@
 
 	"action-askai": "use [[Special:AI]]",
 	"askai": "AI",
+	"askai-chatwith-button": "Chat with AI",
 	"askai-debug-header": "Request was received by DebugService (see $wgAskAIServiceClass), not a real AI service.",
 	"askai-debug-instructions": "AI has received the following instructions:",
 	"askai-debug-prompt": "User has asked the following question:",

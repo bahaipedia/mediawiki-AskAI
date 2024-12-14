@@ -108,6 +108,24 @@
 				"desktop",
 				"mobile"
 			]
+		},
+		"ext.askai.chatwith": {
+			"scripts": [
+				"ext.askai.chatwith.js"
+			],
+			"styles": [
+				"ext.askai.chatwith.css"
+			],
+			"targets": [
+				"desktop",
+				"mobile"
+			],
+			"messages": [
+				"askai-chatwith-button"
+			],
+			"dependencies": [
+				"mediawiki.api"
+			]
 		}
 	},
 	"ResourceFileModulePaths": {
