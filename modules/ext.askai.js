@@ -5,8 +5,7 @@ $( function () {
 		$response = $form.find( '[name="wpResponse"]' ),
 		$pages = $form.find( '[name="wpPages"]' ),
 		$prompt = $form.find( '[name="wpPrompt"]' ),
-		token = $( '#wpEditToken' ).val(),
-		url = $form[ 0 ].action;
+		api = new mw.Api();
 
 	function extractParagraphs() {
 		// List of pages isn't useful to the AI (it doesn't know what to do with it),
@@ -88,16 +87,19 @@ $( function () {
 		const prompt = $prompt.val();
 		$prompt.val( '' );
 
-		$.post( url, {
-			wpExtract: extract,
-			wpPrompt: prompt,
-			wpEditToken: token
-		} ).fail( ( xhr ) => {
-			showResponse( prompt, mw.msg( 'askai-submit-failed',
-				xhr.statusText + ' (' + url + ')'
-			) );
-		} ).done( ( ret ) => {
-			showResponse( prompt, $( '<div>' ).append( ret ).find( '#mw-askai-response' ).text() );
+		const instructions = mw.msg( 'askai-default-instructions' ) + '\n\n' + extract;
+
+		api.postWithToken( 'csrf', {
+			format: 'json',
+			formatversion: 2,
+			action: 'query',
+			prop: 'askai',
+			aiprompt: prompt,
+			aiinstructions: instructions
+		} ).done( function ( ret ) {
+			showResponse( prompt, ret.query.askai.response );
+		} ).fail( function ( code, ret ) {
+			showResponse( prompt, mw.msg( 'askai-submit-failed', ret.error.info ) );
 		} );
 	}
 

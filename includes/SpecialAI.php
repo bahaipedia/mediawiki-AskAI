@@ -25,9 +25,7 @@ namespace MediaWiki\AskAI;
 
 use FormSpecialPage;
 use HTMLForm;
-use MediaWiki\AskAI\Service\ServiceFactory;
 use Status;
-use Xml;
 
 /**
  * Implements [[Special:AI]].
@@ -61,9 +59,6 @@ class SpecialAI extends FormSpecialPage {
 				'label-message' => 'askai-field-prompt',
 				'required' => true,
 				'buttondefault' => $this->msg( 'askai-submit' )->plain()
-			],
-			'Extract' => [
-				'type' => 'hidden'
 			]
 		];
 	}
@@ -80,28 +75,9 @@ class SpecialAI extends FormSpecialPage {
 
 	/** @inheritDoc */
 	public function onSubmit( array $data ) {
-		$ai = ServiceFactory::getAI();
-		if ( !$ai ) {
-			return Status::newFatal( 'askai-unknown-service' );
-		}
-
-		$status = Status::newGood();
-		$response = $ai->query(
-			$data['Prompt'],
-			$this->msg( 'askai-default-instructions' )->plain() . "\n\n" . $data['Extract'],
-			$status
-		);
-
-		if ( !$status->isOK() ) {
-			return $status;
-		}
-
-		$this->getOutput()->disable();
-		echo Xml::element( 'div', [
-			'id' => 'mw-askai-response'
-		], $response );
-
-		return $status;
+		// This form is never submitted to Special:AI
+		// (ext.askai.js uses API to display the response without reloading the page).
+		return Status::newGood();
 	}
 
 	/** @inheritDoc */

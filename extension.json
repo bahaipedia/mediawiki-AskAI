@@ -68,10 +68,12 @@
 				"mobile"
 			],
 			"messages": [
+				"askai-default-instructions",
 				"askai-source",
 				"askai-submit-failed"
 			],
 			"dependencies": [
+				"mediawiki.api",
 				"mediawiki.Title"
 			]
 		},
