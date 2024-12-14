@@ -65,12 +65,12 @@ class OpenAI implements IExternalService {
 	 * @param string $prompt Question to ask.
 	 * @param string $instructions Preferences on how to respond, e.g. "You are a research assistant".
 	 * @param Status $status
-	 * @return string|false
+	 * @return string|null
 	 */
 	public function query( $prompt, $instructions, Status $status ) {
 		if ( !$this->isConfigured ) {
 			$status->fatal( 'askai-openai-not-configured' );
-			return false;
+			return;
 		}
 
 		$postData = FormatJson::encode( [
@@ -100,7 +100,7 @@ class OpenAI implements IExternalService {
 		$httpStatus = $req->execute();
 		if ( !$httpStatus->isOK() ) {
 			$status->merge( $httpStatus );
-			return false;
+			return;
 		}
 		$ret = FormatJson::decode( $req->getContent(), true );
 

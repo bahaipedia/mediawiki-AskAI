@@ -35,7 +35,7 @@ interface IExternalService {
 	 * @param string $prompt Question to ask.
 	 * @param string $instructions Preferences on how to respond, e.g. "You are a research assistant".
 	 * @param Status $status If an error happened, implementation must call $status->fatal( 'error-code' )
-	 * @return string|false Text of response (if successful) or false.
+	 * @return string|null Text of response (if successful) or null.
 	 */
 	public function query( $prompt, $instructions, Status $status );
 }

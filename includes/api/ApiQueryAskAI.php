@@ -61,7 +61,7 @@ class ApiQueryAskAI extends ApiQueryBase {
 			$this->dieStatus( $status );
 		}
 
-		$r = [ 'response' => $response ];
+		$r = [ 'response' => $response ?? '' ];
 		$this->getResult()->addValue( 'query', $this->getModuleName(), $r );
 	}
 
