@@ -8,6 +8,7 @@
 	"action-askai": "use [[Special:AI]]",
 	"askai": "AI",
 	"askai-chatwith-button": "Chat with AI",
+	"askai-chatwith-instructions": "Your job is to filter the list of titles provided below and return the results most likely to contain relevant content. Exclude titles that appear to be an Appendix, Index, Bibliography or Bibliographical list, Reference or Reference list. Exclude pages such as \"Book Name/Volume 20\" as those contain a table of contents. Always include titles that are descriptive or end in the word \"Text\".",
 	"askai-debug-header": "Request was received by DebugService (see $wgAskAIServiceClass), not a real AI service.",
 	"askai-debug-instructions": "AI has received the following instructions:",
 	"askai-debug-prompt": "User has asked the following question:",

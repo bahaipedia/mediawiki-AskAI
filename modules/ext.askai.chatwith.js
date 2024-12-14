@@ -30,24 +30,52 @@ $( function () {
 			action: 'query',
 			list: 'search',
 			srlimit: 500,
-			srsearch: prompt
+			srsearch: prompt,
+			srprop: ''
 		};
 		api.get( q ).done( function ( ret ) {
 			onSearch( ret.query.search.map( ( x ) => x.title ) );
 		} ).fail( function ( code, ret ) {
-			console.log( 'API query failed: ' + JSON.stringify( ret ) );
+			console.log( 'Chat with AI: API query (list=search) failed: ' + JSON.stringify( ret ) );
 		} );
 	}
 
 	/**
-	 * Narrow down successful search results received from the API.
+	 * Ask AI to narrow down successful search results (received from the API)
+	 * to only the most relevant pages.
+	 * If successful, redirect user to Special:AI?wpPages=(list).
 	 *
 	 * @param {string[]} pageNames List of article names in this wiki.
 	 */
 	function onSearch( pageNames ) {
-		// TODO: make POST request to Special:AI and ask AI to "Filter the list of titles provided
-		// below and return the results most likely to contain relevant content".
+		if ( !pageNames.length ) {
+			console.log( 'Chat with AI: no pages found.' );
+			return;
+		}
 
-		// TODO: use the response of AI (list of titles) to redirect to Special:AI?wpPages=(list)
+		const q = {
+			formatversion: 2,
+			action: 'query',
+			prop: 'askai',
+			aiinstructions: mw.msg( 'askai-chatwith-instructions' ),
+			aiprompt: pageNames.join( '\n' )
+		};
+		api.postWithToken( 'csrf', q ).done( function ( ret ) {
+			console.log( 'Chat with API: response from AI: ' + JSON.stringify( ret ) );
+
+			const relevantPageNames = ret.query.askai.response.split( '\n' ).map( ( x ) => x.trim() );
+			if ( !relevantPageNames ) {
+				console.log( 'Chat with AI: AI hasn\'t found any relevant pages.' );
+				return;
+			}
+
+			// Redirect to Special:AI.
+			const specialTitle = new mw.Title( 'Special:AI' );
+			window.location.href = specialTitle.getUrl( {
+				wpPages: relevantPageNames.join( '\n' )
+			} );
+		} ).fail( function ( code, ret ) {
+			console.log( 'Chat with AI: API query (prop=askai) failed: ' + JSON.stringify( ret ) );
+		} );
 	}
 } );
