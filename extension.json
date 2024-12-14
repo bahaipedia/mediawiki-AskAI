@@ -18,6 +18,7 @@
 		}
 	},
 	"AutoloadClasses": {
+		"MediaWiki\\AskAI\\ApiQueryAskAI": "includes/api/ApiQueryAskAI.php",
 		"MediaWiki\\AskAI\\Hooks": "includes/Hooks.php",
 		"MediaWiki\\AskAI\\SpecialAI": "includes/SpecialAI.php",
 		"MediaWiki\\AskAI\\Service\\IExternalService": "includes/Service/IExternalService.php",
@@ -39,7 +40,8 @@
 	},
 	"MessagesDirs": {
 		"AskAI": [
-			"i18n"
+			"i18n",
+			"i18n/api"
 		]
 	},
 	"config": {
@@ -135,6 +137,11 @@
 	"SpecialPages": {
 		"AI": {
 			"class": "MediaWiki\\AskAI\\SpecialAI"
+		}
+	},
+	"APIPropModules": {
+		"askai": {
+			"class": "MediaWiki\\AskAI\\ApiQueryAskAI"
 		}
 	},
 	"manifest_version": 2
