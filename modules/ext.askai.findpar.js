@@ -30,13 +30,15 @@
 	}
 
 	/**
-	 * Remove quotes from string.
+	 * Remove unnecessary parts of snippet/text that can interfere with matching,
+	 * such as quotes, newlines, excessive whitespace, etc.
 	 *
 	 * @param {string} input
 	 * @return {string}
 	 */
-	function removeQuotes( input ) {
-		return input.replace( /['"]/g, '' );
+	function normalizeText( input ) {
+		return input.replace( /['"]/g, '' )
+			.replace( /\s+/g, ' ' );
 	}
 
 	/**
@@ -54,11 +56,11 @@
 			$p.data( 'parNumber', idx );
 
 			// Remove quotes, because CirrusSearch excludes them from the snippet.
-			$p.html( removeQuotes( $p.html() ) );
+			$p.html( normalizeText( $p.html() ) );
 		} );
 
 		// Remove quotes from the snippet, so that behavior without CirrusSearch would be the same.
-		textToFind = removeQuotes( textToFind );
+		textToFind = normalizeText( textToFind );
 
 		let words = textToFind.split( /\s+/ );
 
