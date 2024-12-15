@@ -84,6 +84,9 @@
 		let parNumbers = [];
 		for ( const result of results ) {
 			parNumbers = parNumbers.concat( getParNumbers( result.paragraphs ) );
+			console.log( 'findpar.js: found paragraphs: query=' + result.query +
+				', parNumbers=[' + getParNumbers( result.paragraphs ).join( ',' ) +
+				'], leftoverWords=' + result.leftoverWords );
 		}
 
 		return [ ...new Set( parNumbers ) ].sort();
