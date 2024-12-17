@@ -7,14 +7,15 @@
 	mw.askai = mw.askai || {};
 
 	/**
-	 * Search $document for paragraphs that contain "textToFind", return array of paragraph numbers.
+	 * Search $document for paragraphs that contain "textToFind", return paragraph numbers.
 	 *
 	 * @param {string} textToFind Arbitrary string, e.g. "Sentence is a sequence of words."
 	 * @param {jQuery} $document Paragraphs to be searched.
-	 * @return {number[]} E.g. [ 20, 21, 22, 34, 35 ].
+	 * @return {string} String that contains paragraph numbers, e.g. "1-7,10-12,15".
 	 */
 	mw.askai.findpar = function ( textToFind, $document ) {
-		return findText( textToFind, $document.find( '.mw-parser-output > p' ) );
+		const parNumbers = findText( textToFind, $document.find( '.mw-parser-output > p' ) );
+		return condenseParNumbers( parNumbers );
 	};
 
 	/**
@@ -49,6 +50,10 @@
 	 * @return {number[]} E.g. [ 20, 21, 22, 34, 35 ].
 	 */
 	function findText( textToFind, $paragraphs ) {
+		if ( !textToFind ) {
+			return [];
+		}
+
 		$paragraphs.each( function ( idx, par ) {
 			const $p = $( par );
 
@@ -138,5 +143,47 @@
 				leftoverWords: words
 			};
 		}
+	}
+
+	/**
+	 * Compress list of paragraph numbers to shortest form,
+	 * e.g. 1,2,3,4,5,6,7,10,11,12,15 to 1-7,10-12,15.
+	 *
+	 * @param {number[]} numbers
+	 * @return {string}
+	 */
+	function condenseParNumbers( numbers ) {
+		if ( !numbers.length ) {
+			return '';
+		}
+
+		let next = numbers[ 0 ];
+		const ranges = [ {
+			start: next,
+			end: next
+		} ];
+
+		for ( let i = 1; i < numbers.length; i++ ) {
+			next = numbers[ i ];
+
+			if ( next === ranges[ ranges.length - 1 ].end + 1 ) {
+				// This number can be added to existing range.
+				ranges[ ranges.length - 1 ].end = next;
+			} else {
+				ranges.push( { start: next, end: next } );
+			}
+		}
+
+		const condensed = [];
+		for ( const range of ranges ) {
+			const rangeLen = range.end - range.start;
+			if ( rangeLen === 0 ) {
+				// Only 1 number.
+				condensed.push( range.start );
+			} else {
+				condensed.push( range.start + ( rangeLen === 1 ? ',' : '-' ) + range.end );
+			}
+		}
+		return condensed.join( ',' );
 	}
 }() );

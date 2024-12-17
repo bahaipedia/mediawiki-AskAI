@@ -30,11 +30,53 @@ $( function () {
 			action: 'query',
 			list: 'search',
 			srlimit: 500,
+			srwhat: 'text',
 			srsearch: prompt,
-			srprop: ''
+			srprop: 'snippet'
 		};
 		api.get( q ).done( function ( ret ) {
-			onSearch( ret.query.search.map( ( x ) => x.title ) );
+			const snippets = {};
+			ret.query.search.forEach( ( found ) => {
+				const plaintextSnippet = $( '<div>' ).append( found.snippet ).text().trim();
+				snippets[ found.title ] = plaintextSnippet;
+			} );
+
+			narrowDownPageNames( Object.keys( snippets ) ).then( ( pageNames ) => {
+				const promises = pageNames.map( ( pageName ) => {
+					// Download each of the articles and find the paragraphs that have the snippet.
+					const title = new mw.Title( pageName );
+					const $d = $.Deferred();
+
+					$.get( title.getUrl() ).done( ( html ) => {
+						const parNumbers = mw.askai.findpar(
+							snippets[ pageName ],
+							$( '<div>' ).append( html )
+						);
+						if ( !parNumbers ) {
+							$d.resolve( null );
+							return;
+						}
+
+						$d.resolve( pageName + '#p' + parNumbers );
+					} );
+
+					return $d.promise();
+				} );
+
+				return Promise.all( promises );
+			} ).then( ( res ) => {
+				const pages = res.filter( ( x ) => x );
+				if ( !pages.length ) {
+					console.log( 'Paragraph numbers not found in any of the titles.' );
+					return;
+				}
+
+				// Redirect to Special:AI?wpPages=(list).
+				const specialTitle = new mw.Title( 'Special:AI' );
+				window.location.href = specialTitle.getUrl( {
+					wpPages: pages.join( '\n' )
+				} );
+			} );
 		} ).fail( function ( code, ret ) {
 			console.log( 'Chat with AI: API query (list=search) failed: ' + JSON.stringify( ret ) );
 		} );
@@ -43,15 +85,18 @@ $( function () {
 	/**
 	 * Ask AI to narrow down successful search results (received from the API)
 	 * to only the most relevant pages.
-	 * If successful, redirect user to Special:AI?wpPages=(list).
 	 *
 	 * @param {string[]} pageNames List of article names in this wiki.
+	 * @return {Promise} Resolves into string[] (shortened subset of pageNames).
 	 */
-	function onSearch( pageNames ) {
+	function narrowDownPageNames( pageNames ) {
 		if ( !pageNames.length ) {
 			console.log( 'Chat with AI: no pages found.' );
 			return;
 		}
+
+		// DEBUG: uncomment the following line to test this on all pages (without asking the AI).
+		// return $.Deferred().resolve( pageNames );
 
 		const q = {
 			formatversion: 2,
@@ -60,7 +105,7 @@ $( function () {
 			aiinstructions: mw.msg( 'askai-chatwith-instructions' ),
 			aiprompt: pageNames.join( '\n' )
 		};
-		api.postWithToken( 'csrf', q ).done( function ( ret ) {
+		return api.postWithToken( 'csrf', q ).done( function ( ret ) {
 			console.log( 'Chat with API: response from AI: ' + JSON.stringify( ret ) );
 
 			const relevantPageNames = ret.query.askai.response.split( '\n' ).map( ( x ) => x.trim() );
@@ -69,11 +114,7 @@ $( function () {
 				return;
 			}
 
-			// Redirect to Special:AI.
-			const specialTitle = new mw.Title( 'Special:AI' );
-			window.location.href = specialTitle.getUrl( {
-				wpPages: relevantPageNames.join( '\n' )
-			} );
+			return relevantPageNames;
 		} ).fail( function ( code, ret ) {
 			console.log( 'Chat with AI: API query (prop=askai) failed: ' + JSON.stringify( ret ) );
 		} );
