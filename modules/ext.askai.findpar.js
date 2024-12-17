@@ -40,7 +40,7 @@
 			}
 
 			$d.resolve( pageName + '#p' + parNumbers );
-		} );
+		} ).fail( () => $d.resolve( '' ) );
 
 		return $d.promise();
 	};
