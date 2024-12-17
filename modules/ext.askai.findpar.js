@@ -19,6 +19,33 @@
 	};
 
 	/**
+	 * Asynchronously download the page and run mw.askai.findpar() on it.
+	 *
+	 * @param {string} textToFind Arbitrary string, e.g. "Sentence is a sequence of words."
+	 * @param {string} pageName Page in this wiki that should be searched.
+	 * @return {Promise<string>} Resolves into "Page_title#p1-7,10-12,15" or (if failed) "".
+	 */
+	mw.askai.findparInPage = function ( textToFind, pageName ) {
+		const title = new mw.Title( pageName );
+		const $d = $.Deferred();
+
+		$.get( title.getUrl() ).done( ( html ) => {
+			const parNumbers = mw.askai.findpar(
+				textToFind,
+				$( '<div>' ).append( html )
+			);
+			if ( !parNumbers ) {
+				$d.resolve( '' );
+				return;
+			}
+
+			$d.resolve( pageName + '#p' + parNumbers );
+		} );
+
+		return $d.promise();
+	};
+
+	/**
 	 * Returns an array of paragraph numbers that are found in $paragraphs.
 	 *
 	 * @param {jQuery} $paragraphs Paragraphs to be searched.

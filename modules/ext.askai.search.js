@@ -30,7 +30,7 @@ $( function () {
 	function addToAI() {
 		const $addLink = $( this ),
 			$res = $addLink.parents( '.mw-search-result' ),
-			pageLink = $res.find( 'a' )[ 0 ],
+			pageName = $res.find( 'a' ).attr( 'title' ),
 			snippet = $res.find( '.searchresult' ).text().trim();
 
 		const $loading = $( '<span>' )
@@ -50,7 +50,7 @@ $( function () {
 				.attr( 'class', 'mw-askai-search-add-page' )
 				.append( mw.msg( 'askai-search-add-page' ) )
 				.click( function () {
-					addedSources.push( pageLink.title );
+					addedSources.push( pageName );
 					replaceWithViewLink( $( this ).parent() );
 				} );
 
@@ -65,19 +65,15 @@ $( function () {
 		}
 
 		// Download the article and find the paragraph(s) that contain "matchedText".
-		$.get( pageLink.href ).done( ( html ) => {
-			const parNumbers = mw.askai.findpar(
-				snippet,
-				$( '<div>' ).append( html )
-			);
-			if ( !parNumbers ) {
+		mw.askai.findparInPage( snippet, pageName ).then( ( pageAndParagraphs ) => {
+			if ( !pageAndParagraphs ) {
 				showAddPageLink( mw.msg( 'askai-search-add-not-found' ) );
 				return;
 			}
 
-			addedSources.push( pageLink.title + '#p' + parNumbers );
+			addedSources.push( pageAndParagraphs );
 			replaceWithViewLink( $loading );
-		} ).fail( () => {
+		} ).catch( () => {
 			showAddPageLink( mw.msg( 'askai-search-add-failed' ) );
 		} );
 	}

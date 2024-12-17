@@ -42,28 +42,13 @@ $( function () {
 			} );
 
 			narrowDownPageNames( Object.keys( snippets ) ).then( ( pageNames ) => {
-				const promises = pageNames.map( ( pageName ) => {
-					// Download each of the articles and find the paragraphs that have the snippet.
-					const title = new mw.Title( pageName );
-					const $d = $.Deferred();
-
-					$.get( title.getUrl() ).done( ( html ) => {
-						const parNumbers = mw.askai.findpar(
-							snippets[ pageName ],
-							$( '<div>' ).append( html )
-						);
-						if ( !parNumbers ) {
-							$d.resolve( null );
-							return;
-						}
-
-						$d.resolve( pageName + '#p' + parNumbers );
-					} );
-
-					return $d.promise();
-				} );
-
-				return Promise.all( promises );
+				// Download each of the articles and find the paragraphs that have the snippet.
+				return Promise.all(
+					pageNames.map( ( pageName ) => mw.askai.findparInPage(
+						snippets[ pageName ],
+						pageName
+					) )
+				);
 			} ).then( ( res ) => {
 				const pages = res.filter( ( x ) => x );
 				if ( !pages.length ) {
@@ -87,7 +72,7 @@ $( function () {
 	 * to only the most relevant pages.
 	 *
 	 * @param {string[]} pageNames List of article names in this wiki.
-	 * @return {Promise} Resolves into string[] (shortened subset of pageNames).
+	 * @return {Promise<string[]>} Shortened subset of pageNames.
 	 */
 	function narrowDownPageNames( pageNames ) {
 		if ( !pageNames.length ) {
@@ -96,7 +81,7 @@ $( function () {
 		}
 
 		// DEBUG: uncomment the following line to test this on all pages (without asking the AI).
-		// return $.Deferred().resolve( pageNames );
+		return $.Deferred().resolve( pageNames );
 
 		const q = {
 			formatversion: 2,
