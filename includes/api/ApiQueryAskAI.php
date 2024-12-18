@@ -56,7 +56,7 @@ class ApiQueryAskAI extends ApiQueryBase {
 
 		$r = [
 			'response' => $response ?? '',
-			'service' => get_class( $ai )
+			'service' => $ai->getName()
 		];
 		$this->getResult()->addValue( 'query', $this->getModuleName(), $r );
 	}

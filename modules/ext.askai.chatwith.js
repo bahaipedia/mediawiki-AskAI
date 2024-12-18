@@ -144,8 +144,8 @@ $( function () {
 			console.log( 'Chat with API: API query (prop=askai) succeeded: ' + JSON.stringify( ret ) );
 
 			const result = ret.query.askai;
-			if ( result.service.indexOf( 'DebugService' ) !== -1 ) {
-				// Allow to test this with DebugService, which doesn't know how to answer "narrow down" question.
+			if ( result.service === 'DebugService' ) {
+				// DebugService doesn't know how to answer "narrow down" question, so return all titles.
 				return pageNames;
 			}
 

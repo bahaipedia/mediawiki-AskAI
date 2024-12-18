@@ -60,6 +60,11 @@ class OpenAI implements IExternalService {
 		$this->isConfigured = ( $this->apiKey && $this->apiUrl && $this->model );
 	}
 
+	/** @return string */
+	public function getName() {
+		return 'OpenAI';
+	}
+
 	/**
 	 * Send an arbitrary question to ChatGPT and return the response.
 	 * @param string $prompt Question to ask.

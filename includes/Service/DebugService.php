@@ -29,8 +29,13 @@ use Status;
  * Fake service that responds to any prompts with "What did the user request?" information.
  */
 class DebugService implements IExternalService {
+	/** @return string */
+	public function getName() {
+		return 'DebugService';
+	}
+
 	/**
-	 * Send an arbitrary question to ChatGPT and return the response.
+	 * Send an arbitrary question to DebugService and return the response.
 	 * @param string $prompt Question to ask.
 	 * @param string $instructions Preferences on how to respond, e.g. "You are a research assistant".
 	 * @param Status $status
