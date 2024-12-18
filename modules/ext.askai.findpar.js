@@ -4,6 +4,12 @@
 	/** Maximum number of times that findText() is allowed to call findWordsRecursive() */
 	const recursionLimit = 50;
 
+	/**
+	 * If part of the snippet is found in more paragraphs than this, discard these matches,
+	 * assuming it to be an overly common word/expression.
+	 */
+	const tooManyParagraphsLimit = 5;
+
 	mw.askai = mw.askai || {};
 
 	/**
@@ -104,8 +110,32 @@
 			if ( !result ) {
 				break;
 			} else {
-				results.push( result );
 				words = result.leftoverWords;
+				result.parNumbers = getParNumbers( result.paragraphs );
+
+				if ( result.parNumbers.length <= tooManyParagraphsLimit ) {
+					// New usable result.
+					results.push( result );
+				} else {
+					// This match is useless (too many paragraphs), so we should discard it.
+					// However, if one of these matched paragraphs directly follows the paragraph
+					// from the previous match, this 1 paragraph is still useful.
+
+					if ( results.length > 0 ) {
+						const prev = results[ results.length - 1 ];
+						if ( prev.parNumbers.length > 0 ) {
+							const prevLastParNumber = prev.parNumbers[ prev.parNumbers.length - 1 ],
+								extraParNumber = prevLastParNumber + 1;
+
+							if ( result.parNumbers.indexOf( extraParNumber ) !== -1 ) {
+								// This result is still useful.
+								if ( prev.parNumbers.indexOf( extraParNumber ) === -1 ) {
+									prev.parNumbers.push( extraParNumber );
+								}
+							}
+						}
+					}
+				}
 			}
 
 			if ( limit++ > recursionLimit ) {
@@ -117,9 +147,9 @@
 		// Get all paragraph numbers (sorted and unique).
 		let parNumbers = [];
 		for ( const result of results ) {
-			parNumbers = parNumbers.concat( getParNumbers( result.paragraphs ) );
+			parNumbers = parNumbers.concat( result.parNumbers );
 			console.log( 'findpar.js: found paragraphs: query=' + result.query +
-				', parNumbers=[' + getParNumbers( result.paragraphs ).join( ',' ) +
+				', parNumbers=[' + result.parNumbers.join( ',' ) +
 				'], leftoverWords=' + result.leftoverWords );
 		}
 
