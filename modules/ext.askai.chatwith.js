@@ -66,13 +66,18 @@ $( function () {
 
 			const snippets = {};
 			ret.query.search.forEach( ( found ) => {
-				const plaintextSnippet = $( '<div>' ).append( found.snippet ).text().trim();
-				snippets[ found.title ] = plaintextSnippet;
+				// Not all search results have a snippet. Snippet is necessary
+				// to find relevant paragraphs, so skip results without a snippet.
+				if ( found.snippet ) {
+					const plaintextSnippet = $( '<div>' ).append( found.snippet ).text().trim();
+					snippets[ found.title ] = plaintextSnippet;
+				}
 			} );
 
-			$todo = displayProgress( 'Asking AI to narrow down ' + ret.query.search.length + ' search results...' );
+			const allPageNames = Object.keys( snippets );
+			$todo = displayProgress( 'Asking AI to narrow down ' + allPageNames.length + ' search results...' );
 
-			narrowDownPageNames( Object.keys( snippets ) ).then( ( pageNames ) => {
+			narrowDownPageNames( allPageNames ).then( ( pageNames ) => {
 				if ( pageNames.length === 0 ) {
 					$todo.append( 'AI hasn\'t found any relevant pages.' );
 					return;
@@ -81,8 +86,6 @@ $( function () {
 				$todo.append( 'selected ' + pageNames.length + ' pages.' );
 
 				// Download each of the articles and find the paragraphs that have the snippet.
-				// FIXME: Promise.all() discards successful results if some (but not all) pages
-				// failed to be downloaded.
 				return Promise.all(
 					pageNames.map( ( pageName ) => {
 						const $todo2 = displayProgress( 'Scanning the page "' + pageName + '" for relevant paragraph numbers...' );
@@ -138,8 +141,15 @@ $( function () {
 			aiprompt: pageNames.join( '\n' )
 		};
 		return api.postWithToken( 'csrf', q ).then( function ( ret ) {
-			console.log( 'Chat with API: response from AI: ' + JSON.stringify( ret ) );
-			return ret.query.askai.response.split( '\n' ).map( ( x ) => x.trim() ).filter( ( x ) => x );
+			console.log( 'Chat with API: API query (prop=askai) succeeded: ' + JSON.stringify( ret ) );
+
+			const result = ret.query.askai;
+			if ( result.service.indexOf( 'DebugService' ) !== -1 ) {
+				// Allow to test this with DebugService, which doesn't know how to answer "narrow down" question.
+				return pageNames;
+			}
+
+			return result.response.split( '\n' ).map( ( x ) => x.trim() ).filter( ( x ) => x );
 		} ).fail( function ( code, ret ) {
 			console.log( 'Chat with AI: API query (prop=askai) failed: ' + JSON.stringify( ret ) );
 			return [];
