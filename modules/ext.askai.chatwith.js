@@ -44,7 +44,7 @@ $( function () {
 		}
 
 		// Initialize loading screen.
-		let $todo = displayProgress( 'Performing fulltext search for [' + prompt + ']...' );
+		let $todo = displayProgress( mw.msg( 'askai-progress-search', mw.html.escape( prompt ) ) );
 
 		const q = {
 			formatversion: 2,
@@ -55,14 +55,13 @@ $( function () {
 			srsearch: prompt,
 			srprop: 'snippet'
 		};
-		api.get( q ).fail( function ( code, ret ) {
-			$todo.append( 'API query (list=search) failed: ' + JSON.stringify( ret ) );
-		} ).done( function ( ret ) {
+		api.get( q ).fail( () => {
+			$todo.append( mw.msg( 'askai-progress-search-fail' ) );
+		} ).done( ( ret ) => {
 			if ( ret.query.search.length === 0 ) {
-				$todo.append( 'Nothing found.' );
+				$todo.append( mw.msg( 'askai-progress-search-empty' ) );
 				return;
 			}
-			$todo.append( 'found ' + ret.query.search.length + ' results (total search hits: ' + ret.query.searchinfo.totalhits + ').' );
 
 			const snippets = {};
 			ret.query.search.forEach( ( found ) => {
@@ -75,26 +74,30 @@ $( function () {
 			} );
 
 			const allPageNames = Object.keys( snippets );
-			$todo = displayProgress( 'Asking AI to narrow down ' + allPageNames.length + ' search results...' );
+			$todo.append( mw.msg( 'askai-progress-search-ok', allPageNames.length ) );
+
+			$todo = displayProgress( mw.msg( 'askai-progress-narrow', allPageNames.length ) );
 
 			narrowDownPageNames( allPageNames ).then( ( pageNames ) => {
 				if ( pageNames.length === 0 ) {
-					$todo.append( 'AI hasn\'t found any relevant pages.' );
+					$todo.append( mw.msg( 'askai-progress-narrow-empty' ) );
 					return;
 				}
 
-				$todo.append( 'selected ' + pageNames.length + ' pages.' );
+				$todo.append( mw.msg( 'askai-progress-narrow-ok', pageNames.length ) );
 
 				// Download each of the articles and find the paragraphs that have the snippet.
 				return Promise.all(
 					pageNames.map( ( pageName ) => {
-						const $todo2 = displayProgress( 'Scanning the page "' + pageName + '" for relevant paragraph numbers...' );
+						const $todo2 = displayProgress(
+							mw.msg( 'askai-progress-findpar', mw.html.escape( pageName ) ) );
 
 						return mw.askai.findparInPage(
 							snippets[ pageName ],
 							pageName
 						).then( ( res ) => {
-							$todo2.append( res ? ( 'found: ' + res ) : 'not found', '.' );
+							$todo2.append( res ? mw.msg( 'askai-progress-findpar-ok', res ) :
+								mw.msg( 'askai-progress-findpar-empty' ) );
 							return res;
 						} );
 					} )
@@ -102,11 +105,12 @@ $( function () {
 			} ).then( ( res ) => {
 				const pages = res.filter( ( x ) => x );
 				if ( !pages.length ) {
-					displayProgress( 'Paragraph numbers not found in any of the titles.' );
+					displayProgress( mw.msg( 'askai-progress-findpar-all-empty' ) );
 					return;
 				}
 
-				displayProgress( 'Found relevant pages and paragraphs: ' + pages.join( ', ' ) );
+				displayProgress( mw.msg( 'askai-progress-findpar-all-ok',
+					mw.html.escape( pages.join( ', ' ) ) ) );
 
 				const specialTitle = new mw.Title( 'Special:AI' ),
 					url = specialTitle.getUrl( {
@@ -140,7 +144,7 @@ $( function () {
 			aiinstructions: mw.msg( 'askai-chatwith-instructions' ),
 			aiprompt: pageNames.join( '\n' )
 		};
-		return api.postWithToken( 'csrf', q ).then( function ( ret ) {
+		return api.postWithToken( 'csrf', q ).then( ( ret ) => {
 			console.log( 'Chat with API: API query (prop=askai) succeeded: ' + JSON.stringify( ret ) );
 
 			const result = ret.query.askai;
@@ -152,7 +156,7 @@ $( function () {
 			return result.response.split( '\n' )
 				.map( ( x ) => x.replace( /^-/, '' ).trim() )
 				.filter( ( x ) => x );
-		} ).fail( function ( code, ret ) {
+		} ).fail( ( code, ret ) => {
 			console.log( 'Chat with AI: API query (prop=askai) failed: ' + JSON.stringify( ret ) );
 			return [];
 		} );

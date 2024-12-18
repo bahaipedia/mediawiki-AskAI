@@ -102,6 +102,9 @@
 				"askai-search-add-not-found",
 				"askai-search-add-page",
 				"askai-search-view"
+			],
+			"dependencies": [
+				"mediawiki.Title"
 			]
 		},
 		"ext.askai.addparlinks": {
@@ -126,10 +129,25 @@
 			],
 			"messages": [
 				"askai-chatwith-button",
-				"askai-chatwith-instructions"
+				"askai-chatwith-instructions",
+				"askai-progress-findpar",
+				"askai-progress-findpar-empty",
+				"askai-progress-findpar-all-empty",
+				"askai-progress-findpar-all-ok",
+				"askai-progress-findpar-ok",
+				"askai-progress-narrow",
+				"askai-progress-narrow-empty",
+				"askai-progress-narrow-ok",
+				"askai-progress-search",
+				"askai-progress-search-empty",
+				"askai-progress-search-fail",
+				"askai-progress-search-ok",
+				"askai-search-view"
 			],
 			"dependencies": [
-				"mediawiki.api"
+				"ext.askai.search",
+				"mediawiki.api",
+				"mediawiki.Title"
 			]
 		}
 	},
