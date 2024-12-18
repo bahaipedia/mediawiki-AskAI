@@ -145,11 +145,13 @@ $( function () {
 
 			const result = ret.query.askai;
 			if ( result.service === 'DebugService' ) {
-				// DebugService doesn't know how to answer "narrow down" question, so return all titles.
+				// DebugService doesn't know how to answer "narrow down" question.
 				return pageNames;
 			}
 
-			return result.response.split( '\n' ).map( ( x ) => x.trim() ).filter( ( x ) => x );
+			return result.response.split( '\n' )
+				.map( ( x ) => x.replace( /^-/, '' ).trim() )
+				.filter( ( x ) => x );
 		} ).fail( function ( code, ret ) {
 			console.log( 'Chat with AI: API query (prop=askai) failed: ' + JSON.stringify( ret ) );
 			return [];
