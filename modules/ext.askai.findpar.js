@@ -180,6 +180,12 @@
 		} );
 		if ( $found.length === 0 ) {
 			// Not found in any of the paragraphs.
+			if ( oldQuery === '' ) {
+				// Discard the word that wasn't found, try again from the next word.
+				words = words.slice( 1 );
+				return findWordsRecursive( words, $paragraphs, oldQuery );
+			}
+
 			return null;
 		} else {
 			words = words.slice( 1 );
