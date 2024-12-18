@@ -134,9 +134,6 @@ $( function () {
 	 * @return {Promise<string[]>} Shortened subset of pageNames.
 	 */
 	function narrowDownPageNames( pageNames ) {
-		// DEBUG: uncomment the following line to test this on all pages (without asking the AI).
-		// return $.Deferred().resolve( pageNames );
-
 		const q = {
 			formatversion: 2,
 			action: 'query',
