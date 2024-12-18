@@ -88,8 +88,7 @@
 		},
 		"ext.askai.search": {
 			"scripts": [
-				"ext.askai.search.js",
-				"ext.askai.findpar.js"
+				"ext.askai.search.js"
 			],
 			"targets": [
 				"desktop",
@@ -102,6 +101,19 @@
 				"askai-search-add-not-found",
 				"askai-search-add-page",
 				"askai-search-view"
+			],
+			"dependencies": [
+				"ext.askai.findpar",
+				"mediawiki.Title"
+			]
+		},
+		"ext.askai.findpar": {
+			"scripts": [
+				"ext.askai.findpar.js"
+			],
+			"targets": [
+				"desktop",
+				"mobile"
 			],
 			"dependencies": [
 				"mediawiki.Title"
@@ -145,7 +157,7 @@
 				"askai-search-view"
 			],
 			"dependencies": [
-				"ext.askai.search",
+				"ext.askai.findpar",
 				"mediawiki.api",
 				"mediawiki.Title"
 			]
