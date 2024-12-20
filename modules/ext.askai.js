@@ -93,7 +93,8 @@ $( function () {
 		const prompt = $prompt.val();
 		$prompt.val( '' );
 
-		const instructions = mw.msg( 'askai-default-instructions' ) + '\n\n' + extract;
+		const instructions = mw.msg( 'askai-default-instructions' ) + '\n\n' + extract,
+			$todo = showPrompt( prompt );
 
 		api.postWithToken( 'csrf', {
 			format: 'json',
@@ -103,20 +104,37 @@ $( function () {
 			aiprompt: prompt,
 			aiinstructions: instructions
 		} ).done( function ( ret ) {
-			showResponse( prompt, ret.query.askai.response );
+			showResponse( $todo, ret.query.askai.response, true );
 		} ).fail( function ( code, ret ) {
-			showResponse( prompt, mw.msg( 'askai-submit-failed', ret.error.info ) );
+			showResponse( $todo, mw.msg( 'askai-submit-failed', ret.error.info ), false );
 		} );
+	}
+
+	/**
+	 * Display the currently loading prompt.
+	 * Returns element that can be used in showResponse()
+	 *
+	 * @param {string} prompt
+	 * @return {jQuery} Newly created jQuery element inside Response field.
+	 */
+	function showPrompt( prompt ) {
+		return $( '<p>' ).append( '>>> ', prompt )
+			.attr( 'class', 'mw-askai-prompt mw-askai-prompt-loading' )
+			.appendTo( $response );
 	}
 
 	/**
 	 * Display AI response to user.
 	 *
-	 * @param {string} prompt
+	 * @param {jQuery} $todo Value that was previously returned by showPrompt().
 	 * @param {string} responseText
+	 * @param {boolean} isSuccess True if this is a successful response, false for error.
 	 */
-	function showResponse( prompt, responseText ) {
-		$response.append( $( '<p>' ).append( '>>> ', prompt, '\n', responseText ) );
+	function showResponse( $todo, responseText, isSuccess ) {
+		const $answer = $( '<p>' ).attr( 'class', 'mw-askai-answer' ).append( responseText );
+		$todo.removeClass( 'mw-askai-prompt-loading' )
+			.addClass( isSuccess ? 'mw-askai-prompt-loaded' : 'mw-askai-prompt-failed' )
+			.after( $answer );
 		$response.scrollTop( $response[ 0 ].scrollHeight );
 	}
 

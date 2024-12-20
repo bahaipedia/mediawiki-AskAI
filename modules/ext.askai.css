@@ -8,6 +8,23 @@
 /* "Response" field */
 .mw-askai-response {
 	overflow-y: scroll;
-	height: 15em;
+	height: 30em;
 	white-space: pre-wrap;
+}
+
+.mw-askai-prompt {
+	font-weight: bold;
+}
+
+.mw-askai-prompt-loading:after {
+	content: ' ...';
+	font-style: italic;
+}
+
+.mw-askai-prompt-loaded {
+	color: #090;
+}
+
+.mw-askai-prompt-failed {
+	color: #a00;
 }
