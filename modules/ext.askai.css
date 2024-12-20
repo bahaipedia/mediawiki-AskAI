@@ -4,3 +4,10 @@
 #mw-askai .oo-ui-actionFieldLayout {
 	max-width: 100%;
 }
+
+/* "Response" field */
+.mw-askai-response {
+	overflow-y: scroll;
+	height: 15em;
+	white-space: pre-wrap;
+}

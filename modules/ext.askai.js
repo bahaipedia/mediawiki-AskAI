@@ -2,10 +2,16 @@
 
 $( function () {
 	const $form = $( '#mw-askai' ),
-		$response = $form.find( '[name="wpResponse"]' ),
 		$pages = $form.find( '[name="wpPages"]' ),
 		$prompt = $form.find( '[name="wpPrompt"]' ),
 		api = new mw.Api();
+
+	// Replace <textarea> for response with <div> (which can have advanced formatting).
+	const $oldResponse = $form.find( '[name="wpResponse"]' );
+	const $response = $( '<div>' )
+		.attr( 'class', $oldResponse.attr( 'class' ) )
+		.addClass( 'mw-askai-response' );
+	$oldResponse.replaceWith( $response );
 
 	function extractParagraphs() {
 		// List of pages isn't useful to the AI (it doesn't know what to do with it),
@@ -110,10 +116,7 @@ $( function () {
 	 * @param {string} responseText
 	 */
 	function showResponse( prompt, responseText ) {
-		const oldValue = $response.val(),
-			history = oldValue ? ( oldValue + '\n\n' ) : '';
-
-		$response.val( history + '>>> ' + prompt + '\n' + responseText );
+		$response.append( $( '<p>' ).append( '>>> ', prompt, '\n', responseText ) );
 		$response.scrollTop( $response[ 0 ].scrollHeight );
 	}
 
