@@ -17,8 +17,8 @@
 }
 
 .mw-askai-prompt-loading:after {
-	content: ' ...';
-	font-style: italic;
+	margin-left: 0.5em;
+	content: url( images/loading16x16.gif );
 }
 
 .mw-askai-prompt-loaded {
