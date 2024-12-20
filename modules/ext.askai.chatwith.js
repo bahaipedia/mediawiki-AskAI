@@ -151,6 +151,7 @@ $( function () {
 			}
 
 			return result.response.split( '\n' )
+				.filter( ( x ) => x && x[ 0 ] === '-' )
 				.map( ( x ) => x.replace( /^-/, '' ).trim() )
 				.filter( ( x ) => x );
 		} ).fail( ( code, ret ) => {
