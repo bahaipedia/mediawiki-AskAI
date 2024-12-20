@@ -26,7 +26,7 @@
 	"askai-progress-narrow": "Asking AI to narrow down $1 search results...",
 	"askai-progress-narrow-empty": "AI hasn't found any relevant pages.",
 	"askai-progress-narrow-ok": "selected $1 pages.",
-	"askai-progress-search": "Performing fulltext search for [$1]",
+	"askai-progress-search": "Performing fulltext search for [$1]...",
 	"askai-progress-search-empty": "nothing found.",
 	"askai-progress-search-fail": "API query (list=search) failed.",
 	"askai-progress-search-ok": "found $1 results.",

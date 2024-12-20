@@ -117,11 +117,16 @@ $( function () {
 						wpPages: pages.join( '\n' )
 					} );
 
-				displayProgress( $( '<a>' ).attr( 'href', url )
-					.attr( 'class', 'mw-askai-search-view' )
-					.append( mw.msg( 'askai-search-view' ) ) );
-
-				// window.location.href = url;
+				if ( window.location.href.indexOf( 'redirect=no' ) === -1 ) {
+					// Immediately redirect to Special:AI.
+					window.location.href = url;
+				} else {
+					// User can further inspect the progress page by adding ?redirect=no
+					// to URL of Special:Search.
+					displayProgress( $( '<a>' ).attr( 'href', url )
+						.attr( 'class', 'mw-askai-search-view' )
+						.append( mw.msg( 'askai-search-view' ) ) );
+				}
 			} );
 		} );
 	}
