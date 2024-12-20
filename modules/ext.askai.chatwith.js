@@ -1,7 +1,7 @@
 /* Shows "Chat with AI" button to Special:Search (after the "Search" button). */
 
 $( function () {
-	const $submit = $( '#search [type="submit"]' );
+	const $submit = $( '#search [type="submit"], .mw-search-form-wrapper [type="submit"]' );
 	if ( !$submit.length ) {
 		return;
 	}
