@@ -10,6 +10,12 @@
 	 */
 	const tooManyParagraphsLimit = 5;
 
+	/**
+	 * If snippet had to be cut into more parts than this to find matches, discard all matches,
+	 * assuming that the snippet was generated from a list or table, not a continuous paragraph.
+	 */
+	const tooManySnippetPartsMatched = 4;
+
 	mw.askai = mw.askai || {};
 
 	/**
@@ -151,6 +157,12 @@
 			console.log( 'findpar.js: found paragraphs: query=' + result.query +
 				', parNumbers=[' + result.parNumbers.join( ',' ) +
 				'], leftoverWords=' + result.leftoverWords );
+		}
+
+		if ( results.length > tooManySnippetPartsMatched ) {
+			console.log( 'findpar.js: discarding all matches (they are likely incorrect, ' +
+				'because snippet was split into too many parts)' );
+			return [];
 		}
 
 		return [ ...new Set( parNumbers ) ].sort();
