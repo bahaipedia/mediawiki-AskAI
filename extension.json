@@ -1,12 +1,12 @@
 {
 	"name": "AskAI",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"author": "Edward Chernenko",
 	"url": "https://www.mediawiki.org/wiki/Extension:AskAI",
 	"descriptionmsg": "askai-desc",
 	"license-name": "GPL-2.0+",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"type": "other",
 	"AvailableRights": [
