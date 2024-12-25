@@ -78,7 +78,9 @@ $( function () {
 
 			$todo = displayProgress( mw.msg( 'askai-progress-narrow', allPageNames.length ) );
 
-			narrowDownPageNames( allPageNames ).then( ( pageNames ) => {
+			narrowDownPageNames( allPageNames ).fail( () => {
+				$todo.append( mw.msg( 'askai-progress-narrow-empty' ) );
+			} ).then( ( pageNames ) => {
 				if ( pageNames.length === 0 ) {
 					$todo.append( mw.msg( 'askai-progress-narrow-empty' ) );
 					return;
