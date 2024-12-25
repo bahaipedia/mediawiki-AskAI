@@ -84,7 +84,19 @@ $( function () {
 					return;
 				}
 
-				$todo.append( mw.msg( 'askai-progress-narrow-ok', pageNames.length ) );
+				$todo.append( mw.msg( 'askai-progress-narrow-ok', pageNames.length ), '<br>' );
+
+				if ( pageNames.length < allPageNames.length ) {
+					// At least 1 page was excluded.
+					// Show the list of excluded pages to user.
+					displayProgress( $( '<b>' ).append( mw.msg( 'askai-excluded-pages' ) ) );
+					displayProgress( allPageNames.filter( ( name ) =>
+						pageNames.indexOf( name ) === -1
+					).join( '<br>' ) );
+				}
+
+				displayProgress( $( '<b>' ).append( mw.msg( 'askai-included-pages' ) ) );
+				displayProgress( pageNames.join( '<br>' ) );
 
 				// Download each of the articles and find the paragraphs that have the snippet.
 				return Promise.all(

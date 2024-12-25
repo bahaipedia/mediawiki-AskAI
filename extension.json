@@ -142,6 +142,8 @@
 			"messages": [
 				"askai-chatwith-button",
 				"askai-chatwith-instructions",
+				"askai-excluded-pages",
+				"askai-included-pages",
 				"askai-progress-findpar",
 				"askai-progress-findpar-empty",
 				"askai-progress-findpar-all-empty",
