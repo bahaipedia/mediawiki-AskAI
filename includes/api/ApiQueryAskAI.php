@@ -31,11 +31,16 @@ namespace MediaWiki\AskAI;
 use ApiQueryBase;
 use MediaWiki\AskAI\Service\ServiceFactory;
 use Status;
+use ThrottledError;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiQueryAskAI extends ApiQueryBase {
 	public function execute() {
 		$this->checkUserRightsAny( 'askai' );
+
+		if ( $this->getUser()->pingLimiter( 'askai' ) ) {
+			$this->dieStatus( Status::newFatal( 'apierror-ratelimited' ) );
+		}
 
 		$ai = ServiceFactory::getAI();
 		if ( !$ai ) {

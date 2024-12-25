@@ -17,6 +17,14 @@
 			"askai": true
 		}
 	},
+	"RateLimits": {
+		"askai": {
+			"user": [
+				5,
+				30
+			]
+		}
+	},
 	"AutoloadClasses": {
 		"MediaWiki\\AskAI\\ApiQueryAskAI": "includes/api/ApiQueryAskAI.php",
 		"MediaWiki\\AskAI\\Hooks": "includes/Hooks.php",
