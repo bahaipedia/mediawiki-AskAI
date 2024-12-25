@@ -94,11 +94,11 @@ $( function () {
 					displayProgress( $( '<b>' ).append( mw.msg( 'askai-excluded-pages' ) ) );
 					displayProgress( allPageNames.filter( ( name ) =>
 						pageNames.indexOf( name ) === -1
-					).join( '<br>' ) );
+					).map( mw.html.escape ).join( '<br>' ) );
 				}
 
 				displayProgress( $( '<b>' ).append( mw.msg( 'askai-included-pages' ) ) );
-				displayProgress( pageNames.join( '<br>' ) );
+				displayProgress( pageNames.map( mw.html.escape ).join( '<br>' ) );
 
 				// Download each of the articles and find the paragraphs that have the snippet.
 				return Promise.all(
