@@ -29,39 +29,30 @@ namespace MediaWiki\AskAI;
  */
 
 use ApiQueryBase;
-use MediaWiki\AskAI\Service\ServiceFactory;
 use Status;
-use ThrottledError;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiQueryAskAI extends ApiQueryBase {
 	public function execute() {
 		$this->checkUserRightsAny( 'askai' );
 
-		if ( $this->getUser()->pingLimiter( 'askai' ) ) {
+		$user = $this->getUser();
+		if ( $user->pingLimiter( 'askai' ) ) {
 			$this->dieStatus( Status::newFatal( 'apierror-ratelimited' ) );
 		}
 
-		$ai = ServiceFactory::getAI();
-		if ( !$ai ) {
-			$this->dieStatus( Status::newFatal( 'askai-unknown-service' ) );
-		}
-
 		$params = $this->extractRequestParams();
+		$query = new AIQuery( $user );
+		$query->setInstructions( $params['aiinstructions'] );
 
-		$status = Status::newGood();
-		$response = $ai->query(
-			$params['aiprompt'],
-			$params['aiinstructions'],
-			$status
-		);
-		if ( !$status->isOK() ) {
-			$this->dieStatus( $status );
+		$response = $query->send( $params['aiprompt'] );
+		if ( $response === null ) {
+			$this->dieStatus( $query->getStatus() );
 		}
 
 		$r = [
-			'response' => $response ?? '',
-			'service' => $ai->getName()
+			'response' => $response,
+			'service' => $query->getServiceName()
 		];
 		$this->getResult()->addValue( 'query', $this->getModuleName(), $r );
 	}
