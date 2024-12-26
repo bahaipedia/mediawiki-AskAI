@@ -5,8 +5,8 @@
 		]
 	},
 
-	"apihelp-query+askai-param-prompt": "Question that should be answered by AI.",
-	"apihelp-query+askai-param-instructions": "Optional instructions on how AI should answer (assumptions, output format, etc.).",
+	"apihelp-query+askai-param-aiprompt": "Question that should be answered by AI.",
+	"apihelp-query+askai-param-aiinstructions": "Optional instructions on how AI should answer (assumptions, output format, etc.).",
 	"apihelp-query+askai-example": "Get AI response to the question.",
 	"apihelp-query+askai-example-instructions": "Ask AI to calculate circumference, but instruct it to assume that the value of Pi is 4.",
 	"apihelp-query+askai-summary": "Send query to AI and return its response."
