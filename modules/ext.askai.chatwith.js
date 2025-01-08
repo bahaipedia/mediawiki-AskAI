@@ -36,16 +36,19 @@ $( function () {
 		return $( '<p>' ).append( html, ' ' ).appendTo( mw.util.$content );
 	}
 
-	/* Handler of "Chat with AI" button */
-	function prepareChat() {
+	/**
+	 * Get the list of search results from this wiki.
+	 *
+	 * @return {Promise<Object>} Map of snippets: { 'Title 1': 'HTML snippet 1', ... }
+	 */
+	function getSearchResults() {
 		const prompt = $prompt.val().trim();
 		if ( !prompt ) {
-			return;
+			return Promise.resolve( {} );
 		}
 
 		// Initialize loading screen.
 		let $todo = displayProgress( mw.msg( 'askai-progress-search', mw.html.escape( prompt ) ) );
-
 		const q = {
 			formatversion: 2,
 			action: 'query',
@@ -55,14 +58,13 @@ $( function () {
 			srsearch: prompt,
 			srprop: 'snippet'
 		};
+
+		const $d = $.Deferred();
+
 		api.get( q ).fail( () => {
 			$todo.append( mw.msg( 'askai-progress-search-fail' ) );
+			$d.reject();
 		} ).done( ( ret ) => {
-			if ( ret.query.search.length === 0 ) {
-				$todo.append( mw.msg( 'askai-progress-search-empty' ) );
-				return;
-			}
-
 			const snippets = {};
 			ret.query.search.forEach( ( found ) => {
 				// Not all search results have a snippet. Snippet is necessary
@@ -73,10 +75,28 @@ $( function () {
 				}
 			} );
 
-			const allPageNames = Object.keys( snippets );
-			$todo.append( mw.msg( 'askai-progress-search-ok', allPageNames.length ) );
+			const numResults = Object.keys( snippets ).length;
+			if ( numResults === 0 ) {
+				$todo.append( mw.msg( 'askai-progress-search-empty' ) );
+			} else {
+				$todo.append( mw.msg( 'askai-progress-search-ok', numResults ) );
+			}
 
-			$todo = displayProgress( mw.msg( 'askai-progress-narrow', allPageNames.length ) );
+			$d.resolve( snippets );
+		} );
+		return $d.promise();
+	}
+
+	/* Handler of "Chat with AI" button */
+	function prepareChat() {
+		getSearchResults().then( ( snippets ) => {
+			const allPageNames = Object.keys( snippets );
+			if ( allPageNames.length === 0 ) {
+				// Nothing found.
+				return;
+			}
+
+			const $todo = displayProgress( mw.msg( 'askai-progress-narrow', allPageNames.length ) );
 
 			narrowDownPageNames( allPageNames ).fail( () => {
 				$todo.append( mw.msg( 'askai-progress-narrow-empty' ) );
