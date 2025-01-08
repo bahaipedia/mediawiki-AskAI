@@ -6,9 +6,7 @@ $( function () {
 		return;
 	}
 
-	const $prompt = $( '#searchText input' ),
-		api = new mw.Api();
-
+	const api = new mw.Api();
 	let $loading;
 
 	// Add "Chat with AI" button.
@@ -38,53 +36,23 @@ $( function () {
 
 	/**
 	 * Get the list of search results from this wiki.
+	 * Because "Chat with AI" is used on Special:Search, we can just get the titles/snippets
+	 * that are currently being displayed.
 	 *
 	 * @return {Promise<Object>} Map of snippets: { 'Title 1': 'HTML snippet 1', ... }
 	 */
 	function getSearchResults() {
-		const prompt = $prompt.val().trim();
-		if ( !prompt ) {
-			return Promise.resolve( {} );
-		}
+		const snippets = {};
 
-		// Initialize loading screen.
-		let $todo = displayProgress( mw.msg( 'askai-progress-search', mw.html.escape( prompt ) ) );
-		const q = {
-			formatversion: 2,
-			action: 'query',
-			list: 'search',
-			srlimit: 500,
-			srwhat: 'text',
-			srsearch: prompt,
-			srprop: 'snippet'
-		};
+		$( '.mw-search-result' ).each( ( idx, entry ) => {
+			const $entry = $( entry ),
+				title = $entry.find( '.mw-search-result-heading a' ).attr( 'title' ),
+				snippet = $entry.find( '.searchresult' ).text();
 
-		const $d = $.Deferred();
-
-		api.get( q ).fail( () => {
-			$todo.append( mw.msg( 'askai-progress-search-fail' ) );
-			$d.reject();
-		} ).done( ( ret ) => {
-			const snippets = {};
-			ret.query.search.forEach( ( found ) => {
-				// Not all search results have a snippet. Snippet is necessary
-				// to find relevant paragraphs, so skip results without a snippet.
-				if ( found.snippet ) {
-					const plaintextSnippet = $( '<div>' ).append( found.snippet ).text().trim();
-					snippets[ found.title ] = plaintextSnippet;
-				}
-			} );
-
-			const numResults = Object.keys( snippets ).length;
-			if ( numResults === 0 ) {
-				$todo.append( mw.msg( 'askai-progress-search-empty' ) );
-			} else {
-				$todo.append( mw.msg( 'askai-progress-search-ok', numResults ) );
-			}
-
-			$d.resolve( snippets );
+			snippets[ title ] = snippet;
 		} );
-		return $d.promise();
+
+		return Promise.resolve( snippets );
 	}
 
 	/* Handler of "Chat with AI" button */
