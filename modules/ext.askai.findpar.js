@@ -8,13 +8,14 @@
 	 * If part of the snippet is found in more paragraphs than this, discard these matches,
 	 * assuming it to be an overly common word/expression.
 	 */
-	const tooManyParagraphsLimit = 5;
+	const partInTooManyParagraphsLimit = 5;
 
 	/**
-	 * If snippet had to be cut into more parts than this to find matches, discard all matches,
-	 * assuming that the snippet was generated from a list or table, not a continuous paragraph.
+	 * If findText() found more paragraphs than this, discard all matches as uncertain,
+	 * assuming that the snippet was generated from a list or table,
+	 * not a continuous paragraph.
 	 */
-	const tooManySnippetPartsMatched = 4;
+	const entireSnippetInTooManyParagraphsLimit = 12;
 
 	mw.askai = mw.askai || {};
 
@@ -119,7 +120,7 @@
 				words = result.leftoverWords;
 				result.parNumbers = getParNumbers( result.paragraphs );
 
-				if ( result.parNumbers.length <= tooManyParagraphsLimit ) {
+				if ( result.parNumbers.length <= partInTooManyParagraphsLimit ) {
 					// New usable result.
 					results.push( result );
 				} else {
@@ -159,9 +160,9 @@
 				'], leftoverWords=' + result.leftoverWords );
 		}
 
-		if ( results.length > tooManySnippetPartsMatched ) {
-			console.log( 'findpar.js: discarding all matches (they are likely incorrect, ' +
-				'because snippet was split into too many parts)' );
+		if ( results.length > entireSnippetInTooManyParagraphsLimit ) {
+			console.log( 'findpar.js: found too many paragraphs (' + results.length +
+				'), discarding all matches (they are likely incorrect).' );
 			return [];
 		}
 
