@@ -23,7 +23,10 @@
 
 namespace MediaWiki\AskAI;
 
+use DOMDocument;
+use MediaWiki\MediaWikiServices;
 use Title;
+use Wikimedia\ScopedCallback;
 
 /**
  * Methods to split the page text into paragraphs and to search for paragraph numbers of snippets.
@@ -55,5 +58,50 @@ class ParagraphExtractor {
 	 */
 	public function findSnippet( $textToFind ) {
 		/* TODO */
+	}
+
+	/**
+	 * Parse this page and split it into paragraphs. Returns array of innerText of every paragraph.
+	 * @return string[]
+	 */
+	public function getAllParagraphs() {
+		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $this->title );
+		$pout = $page->getParserOutput();
+		if ( !$pout ) {
+			// Page doesn't exist, can't be parsed, etc.
+			return [];
+		}
+
+		$text = $pout->getRawText();
+
+		// Parse HTML, so that we can extract the paragraphs.
+		// Because we don't need to modify/output this HTML, we don't need to bother with RemexHtml
+		// and can use less tolerant DOMDocument, ignoring the irrelevant LibXML errors.
+		$cleanup = $this->suppressLibXMLErrors();
+
+		$doc = new DOMDocument;
+		if ( !$doc->loadHTML( $text ) ) {
+			// Failed to parse.
+			return [];
+		}
+
+		$innerText = [];
+		foreach ( $doc->getElementsByTagName( 'p' ) as $element ) {
+			// We only want the text of this paragraph (without any HTML tags inside).
+			$innerText[] = $element->textContent;
+		}
+		return $innerText;
+	}
+
+	/**
+	 * Temporarily suppress LibXML errors. Automatically undone when returned object gets deconstructed.
+	 * @return ScopedCallback
+	 */
+	protected function suppressLibXMLErrors() {
+		$prevErrorMode = libxml_use_internal_errors( true );
+		return new ScopedCallback( static function () use ( $prevErrorMode ) {
+			libxml_clear_errors();
+			libxml_use_internal_errors( $prevErrorMode );
+		} );
 	}
 }
