@@ -69,8 +69,8 @@ class SpecialAI extends FormSpecialPage {
 		$form->suppressDefaultSubmit();
 
 		$out = $this->getOutput();
-		$out->addModules( 'ext.askai' );
-		$out->addModuleStyles( 'ext.askai.css' );
+		$out->addModules( 'ext.askai.special' );
+		$out->addModuleStyles( 'ext.askai.special.css' );
 	}
 
 	/** @inheritDoc */

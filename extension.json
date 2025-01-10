@@ -68,9 +68,9 @@
 		}
 	},
 	"ResourceModules": {
-		"ext.askai": {
+		"ext.askai.special": {
 			"scripts": [
-				"ext.askai.js"
+				"ext.askai.special.js"
 			],
 			"targets": [
 				"desktop",
@@ -86,9 +86,9 @@
 				"mediawiki.Title"
 			]
 		},
-		"ext.askai.css": {
+		"ext.askai.special.css": {
 			"styles": [
-				"ext.askai.css"
+				"ext.askai.special.css"
 			],
 			"targets": [
 				"desktop",
