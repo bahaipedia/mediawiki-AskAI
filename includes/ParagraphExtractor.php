@@ -49,6 +49,7 @@ class ParagraphExtractor {
 	 */
 	public function extractParagraphs( $parNumbers ) {
 		/* TODO */
+		return '';
 	}
 
 	/**
@@ -58,6 +59,7 @@ class ParagraphExtractor {
 	 */
 	public function findSnippet( $textToFind ) {
 		/* TODO */
+		return '';
 	}
 
 	/**
@@ -103,5 +105,61 @@ class ParagraphExtractor {
 			libxml_clear_errors();
 			libxml_use_internal_errors( $prevErrorMode );
 		} );
+	}
+
+	/**
+	 * Uncompress the shortened list of paragraph numbers (with ranges) into an array of numbers.
+	 * @param string $parNumbers List of paragraph numbers, e.g. "1-7,10-12,15".
+	 * @return int[] Array of paragraph numbers, e.g. [ 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 15 ].
+	 */
+	public function unpackParNumbers( $parNumbers ) {
+		$indexes = [];
+		foreach ( explode( ',', $parNumbers ) as $pair ) {
+			$range = explode( '-', $pair );
+			$start = (int)$range[0];
+			$end = $range[1] ?? $start;
+
+			for ( $idx = $start; $idx <= $end; $idx++ ) {
+				$indexes[] = $idx;
+			}
+		}
+
+		return $indexes;
+	}
+
+	/**
+	 * Compress the array of paragraph numbers to shortest string form.
+	 * @param int[] $indexes Array of paragraph numbers, e.g. [ 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 15 ].
+	 * @return string List of paragraph numbers, e.g. "1-7,10-12,15".
+	 */
+	public function packParNumbers( $indexes ) {
+		if ( !$indexes ) {
+			return '';
+		}
+
+		// Find any groups of sequential numbers, e.g. "1,2,3,4".
+		$first = array_shift( $indexes );
+		$ranges = [ [ 'start' => $first, 'end' => $first ] ];
+		foreach ( $indexes as $number ) {
+			if ( $number === $ranges[count( $ranges ) - 1]['end'] + 1 ) {
+				// This number can be added to existing range.
+				$ranges[count( $ranges ) - 1]['end'] = $number;
+			} else {
+				$ranges[] = [ 'start' => $number, 'end' => $number ];
+			}
+		}
+
+		$packed = [];
+		foreach ( $ranges as $range ) {
+			$rangeLen = $range['end'] - $range['start'];
+			if ( $rangeLen === 0 ) {
+				// Only 1 number.
+				$packed[] = $range['start'];
+			} else {
+				$packed[] = $range['start'] . ( $rangeLen === 1 ? ',' : '-' ) . $range['end'];
+			}
+		}
+
+		return implode( ',', $packed );
 	}
 }
