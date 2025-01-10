@@ -29,6 +29,7 @@ use MediaWiki\AskAI\Service\ServiceFactory;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
 use Status;
+use Title;
 use User;
 
 /**
@@ -45,7 +46,10 @@ class AIQuery {
 	protected $logger;
 
 	/** @var string */
-	protected $instructions;
+	protected $instructions = '';
+
+	/** @var string[] */
+	protected $contextExtracts = [];
 
 	/** @var Status */
 	protected $status;
@@ -89,8 +93,40 @@ class AIQuery {
 	}
 
 	/**
+	 * Choose several pages to be quoted at the end of AI instructions.
+	 * If page name has an anchor like "#p2,4-6,9", only these paragraphs are included.
+	 * @param string[] $pageNames E.g. [ 'First page#p1-7,10-12,15', 'Another page#p5', 'Page 3' ].
+	 */
+	public function setContextPages( $pageNames ) {
+		// Obtain text of all pages. If paragraphs are specified, only these paragraphs are used.
+		$extracts = [];
+
+		foreach ( $pageNames as $idx => $pageName ) {
+			$title = Title::newFromText( $pageName );
+			if ( !$title ) {
+				continue;
+			}
+
+			$parNumbers = '';
+			if ( preg_match( '/^p([0-9\-,]+)$/', $title->getFragment(), $matches ) ) {
+				$parNumbers = $matches[1];
+			}
+
+			$extractor = new ParagraphExtractor( $title );
+
+			$foundParagraphs = $extractor->extractParagraphs( $parNumbers );
+			if ( $foundParagraphs ) {
+				$extracts[] = wfMessage( 'askai-source' )->numParams( $idx + 1 )->params( $title->getFullText() ) .
+					"\n\n" . implode( "\n\n", $foundParagraphs );
+			}
+		}
+
+		$this->contextExtracts = $extracts;
+	}
+
+	/**
 	 * Send an arbitrary question to AI and return the response.
-	 * @param string $prompt Question to ask.
+	 * @param string $prompt Question to ask, e.g. "How big are elephants?".
 	 * @return string|null Text of response (if successful) or null.
 	 */
 	public function send( $prompt ) {
@@ -99,7 +135,11 @@ class AIQuery {
 			return null;
 		}
 
-		$instructions = $this->instructions ?? '';
+		$instructions = $this->instructions;
+		if ( $this->contextExtracts ) {
+			$instructions .= "\n\n" . implode( "\n\n", $this->contextExtracts );
+		}
+
 		$response = $this->service->query(
 			$prompt,
 			$instructions,

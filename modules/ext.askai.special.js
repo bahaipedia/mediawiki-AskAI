@@ -13,87 +13,16 @@ $( function () {
 		.addClass( 'mw-askai-response' );
 	$oldResponse.replaceWith( $response );
 
-	function extractParagraphs() {
-		// List of pages isn't useful to the AI (it doesn't know what to do with it),
-		// we need to retrieve the text of paragraphs (e.g. [[Some page#p6-8]])
-		// and send this text to AI as a part of instructions (not the user-chosen Prompt).
-		const promises = $pages.val().split( '\n' ).map( ( pageName ) => {
-			let title;
-			try {
-				title = new mw.Title( pageName );
-			} catch ( error ) {
-				// Invalid title.
-				return [];
-			}
-
-			const fragment = title.fragment,
-				parNumbers = new Set();
-
-			if ( fragment && fragment.match( /^p[0-9\-,]+$/ ) ) {
-				// Anchor is the list of paragraphs, e.g. "p4", or "p6-8", or "p3,5,7".
-				fragment.slice( 1 ).split( ',' ).forEach( ( pair ) => {
-					const range = pair.split( '-' ),
-						start = parseInt( range[ 0 ] ),
-						end = parseInt( range.length > 1 ? range[ 1 ] : start );
-
-					for ( let idx = start; idx <= end; idx++ ) {
-						parNumbers.add( idx );
-					}
-				} );
-			}
-
-			const $d = $.Deferred();
-
-			$.get( title.getUrl() ).done( ( html ) => {
-				const $paragraphs = $( '<div>' ).append( html ).find( '.mw-parser-output > p' );
-
-				let extract;
-				if ( parNumbers.size === 0 ) {
-					// Use the entire page (no paragraph numbers were selected).
-					extract = $paragraphs.toArray();
-				} else {
-					extract = [];
-					[ ...parNumbers ].sort( ( a, b ) => a - b ).forEach( ( idx ) => {
-						const p = $paragraphs[ idx ];
-						if ( p ) {
-							extract.push( p );
-						}
-					} );
-				}
-
-				$d.resolve( {
-					title: title,
-					extract: extract.map( ( p ) => {
-						return p.innerText.trim();
-					} ).join( '\n\n' )
-				} );
-			} );
-
-			return $d.promise();
-		} );
-
-		// Accumulate the results into 1 string.
-		return Promise.all( promises ).then( ( pageResults ) => {
-			return pageResults.filter( ( x ) => x.extract ).map( ( ret, idx ) => {
-				const fragment = ret.title.fragment;
-				return mw.msg( 'askai-source',
-					idx + 1,
-					ret.title.getPrefixedText() + ( fragment ? '#' + fragment : '' )
-				) + '\n\n' + ret.extract;
-			} ).join( '\n\n' );
-		} );
-	}
-
 	/**
 	 * Send arbitrary question to AI and display the result.
 	 *
-	 * @param {string} extract
+	 * @param {string[]} pageNames
 	 */
-	function sendPrompt( extract ) {
+	function sendPrompt( pageNames ) {
 		const prompt = $prompt.val();
 		$prompt.val( '' );
 
-		const instructions = mw.msg( 'askai-default-instructions' ) + '\n\n' + extract,
+		const instructions = mw.msg( 'askai-default-instructions' ),
 			$todo = showPrompt( prompt );
 
 		api.postWithToken( 'csrf', {
@@ -102,7 +31,8 @@ $( function () {
 			action: 'query',
 			prop: 'askai',
 			aiprompt: prompt,
-			aiinstructions: instructions
+			aiinstructions: instructions,
+			aicontextpages: pageNames.join( '|' )
 		} ).done( function ( ret ) {
 			showResponse( $todo, ret.query.askai.response, true );
 		} ).fail( function ( code, ret ) {
@@ -140,7 +70,7 @@ $( function () {
 
 	function onsubmit( ev ) {
 		ev.preventDefault();
-		extractParagraphs().then( sendPrompt );
+		sendPrompt( $pages.val().split( '\n' ) );
 	}
 
 	$form.on( 'submit', onsubmit );

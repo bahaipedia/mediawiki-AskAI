@@ -44,12 +44,18 @@ class ParagraphExtractor {
 
 	/**
 	 * Obtain the text of several paragraphs by their numbers.
-	 * @param string $parNumbers List of paragraph numbers, e.g. "1-7,10-12,15".
-	 * @return string Concatenated text of requested paragraphs.
+	 * @param string $parNumbers List of paragraph numbers (e.g. "1-7,10-12,15") or "" for entire page.
+	 * @return string[] Concatenated text of requested paragraphs.
 	 */
 	public function extractParagraphs( $parNumbers ) {
-		/* TODO */
-		return '';
+		$allParagraphs = $this->getAllParagraphs();
+		if ( $parNumbers === '' ) {
+			return $allParagraphs;
+		}
+
+		return array_map( static function ( $index ) use ( $allParagraphs ) {
+			return $allParagraphs[$index];
+		}, $this->unpackParNumbers( $parNumbers ) );
 	}
 
 	/**
@@ -90,7 +96,7 @@ class ParagraphExtractor {
 		$innerText = [];
 		foreach ( $doc->getElementsByTagName( 'p' ) as $element ) {
 			// We only want the text of this paragraph (without any HTML tags inside).
-			$innerText[] = $element->textContent;
+			$innerText[] = trim( $element->textContent );
 		}
 		return $innerText;
 	}

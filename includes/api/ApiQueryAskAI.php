@@ -36,15 +36,15 @@ class ApiQueryAskAI extends ApiQueryBase {
 	public function execute() {
 		$this->checkUserRightsAny( 'askai' );
 
+		$params = $this->extractRequestParams();
 		$user = $this->getUser();
 		if ( $user->pingLimiter( 'askai' ) ) {
 			$this->dieStatus( Status::newFatal( 'apierror-ratelimited' ) );
 		}
 
-		$params = $this->extractRequestParams();
 		$query = new AIQuery( $user );
 		$query->setInstructions( $params['aiinstructions'] );
-
+		$query->setContextPages( explode( '|', $params['aicontextpages'] ) );
 		$response = $query->send( $params['aiprompt'] );
 		if ( $response === null ) {
 			$this->dieStatus( $query->getStatus() );
@@ -77,6 +77,9 @@ class ApiQueryAskAI extends ApiQueryBase {
 				ParamValidator::PARAM_REQUIRED => true
 			],
 			'aiinstructions' => [
+				ParamValidator::PARAM_TYPE => 'string'
+			],
+			'aicontextpages' => [
 				ParamValidator::PARAM_TYPE => 'string'
 			]
 		];
