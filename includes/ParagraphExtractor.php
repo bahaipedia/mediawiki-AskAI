@@ -32,6 +32,19 @@ use Wikimedia\ScopedCallback;
  * Methods to split the page text into paragraphs and to search for paragraph numbers of snippets.
  */
 class ParagraphExtractor {
+	protected const LIMITS = [
+		// Maximum number of times that findSnippet() is allowed to call findWordsRecursive()
+		'recursionCalls' => 50,
+
+		// If part of the snippet is found in more paragraphs than this, discard these matches,
+		// assuming it to be an overly common word/expression.
+		'partInTooManyParagraphs' => 5,
+
+		// If findText() found more paragraphs than this, discard all matches as uncertain,
+		// assuming that the snippet was generated from a list or table, not a continuous paragraph.
+		'entireSnippetInTooManyParagraphs' => 12
+	];
+
 	/** @var Title */
 	protected $title;
 
@@ -62,7 +75,7 @@ class ParagraphExtractor {
 	 * Parse this page and split it into paragraphs. Returns array of innerText of every paragraph.
 	 * @return string[]
 	 */
-	public function getAllParagraphs() {
+	protected function getAllParagraphs() {
 		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $this->title );
 		$pout = $page->getParserOutput();
 		if ( !$pout ) {
@@ -174,11 +187,6 @@ class ParagraphExtractor {
 			return '';
 		}
 
-		// Settings, TODO: add documentation.
-		$recursionLimit = 50;
-		$partInTooManyParagraphsLimit = 5;
-		$entireSnippetInTooManyParagraphsLimit = 12;
-
 		// Remove quotes from the snippet, so that behavior without CirrusSearch would be the same.
 		$textToFind = $this->normalizeTextForSearch( $textToFind );
 		$paragraphs = array_map( function ( $text ) {
@@ -198,7 +206,7 @@ class ParagraphExtractor {
 			$words = $result['leftoverWords'];
 			$result['parNumbers'] = array_keys( $result['paragraphs'] );
 
-			if ( count( $result['parNumbers'] ) <= $partInTooManyParagraphsLimit ) {
+			if ( count( $result['parNumbers'] ) <= self::LIMITS['partInTooManyParagraphs'] ) {
 				// New usable result.
 				$results[] = $result;
 			} else {
@@ -218,13 +226,13 @@ class ParagraphExtractor {
 				}
 			}
 
-			if ( $limit++ > $recursionLimit ) {
+			if ( $limit++ > self::LIMITS['recursionCalls'] ) {
 				// console.log( 'findpar.js: Depth limit reached.' );
 				break;
 			}
 		}
 
-		if ( count( $results ) > $entireSnippetInTooManyParagraphsLimit ) {
+		if ( count( $results ) > self::LIMITS['entireSnippetInTooManyParagraphs'] ) {
 			// console.log( 'findpar.js: found too many paragraphs (' + results.length +
 			//	'), discarding all matches (they are likely incorrect).' );
 			return '';
@@ -255,7 +263,7 @@ class ParagraphExtractor {
 	 * string[] paragraphs Paragraphs where "query" was found.
 	 * string[] leftoverWords Remaining words from "words" array that haven't been found yet.
 	 */
-	public function findWordsRecursive( array $words, array $paragraphs, $oldQuery = '' ) {
+	protected function findWordsRecursive( array $words, array $paragraphs, $oldQuery = '' ) {
 		if ( !$words ) {
 			// Empty prompt.
 			return null;
@@ -300,7 +308,7 @@ class ParagraphExtractor {
 	 * @param string $text
 	 * @return string
 	 */
-	public function normalizeTextForSearch( $text ) {
+	protected function normalizeTextForSearch( $text ) {
 		$text = str_replace( [ '"', "'" ], '', $text );
 		return preg_replace( '/\s+/', ' ', $text );
 	}
