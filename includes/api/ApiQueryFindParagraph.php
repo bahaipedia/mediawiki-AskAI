@@ -25,35 +25,63 @@ namespace MediaWiki\AskAI;
 
 /**
  * @file
- * API to send questions to AI.
+ * API to search articles for paragraph numbers that contain some text.
  */
 
+use ApiQuery;
 use ApiQueryBase;
+use FormatJson;
 use Status;
+use Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class ApiQueryAskAI extends ApiQueryBase {
+class ApiQueryFindParagraph extends ApiQueryBase {
+	/**
+	 * @param ApiQuery $query
+	 * @param string $moduleName
+	 */
+	public function __construct( ApiQuery $query, $moduleName ) {
+		parent::__construct( $query, $moduleName, 'fp' );
+	}
+
 	/** @inheritDoc */
 	public function execute() {
 		$this->checkUserRightsAny( 'askai' );
 
 		$params = $this->extractRequestParams();
 		$user = $this->getUser();
-		if ( $user->pingLimiter( 'askai' ) ) {
+		if ( $user->pingLimiter( 'askai-findparagraph' ) ) {
 			$this->dieStatus( Status::newFatal( 'apierror-ratelimited' ) );
 		}
 
-		$query = new AIQuery( $user );
-		$query->setInstructions( $params['aiinstructions'] );
-		$query->setContextPages( explode( '|', $params['aicontextpages'] ) );
-		$response = $query->send( $params['aiprompt'] );
-		if ( $response === null ) {
-			$this->dieStatus( $query->getStatus() );
+		// JSON payload is { "Title 1": "Text to find 1", "Title 2": "Text 2", ... }
+		$status = FormatJson::parse( $params['json'], FormatJson::FORCE_ASSOC );
+		if ( !$status->isOK() ) {
+			$this->dieStatus( $status );
+		}
+
+		$found = [];
+		$notFound = [];
+		foreach ( $status->getValue() as $pageName => $textToFind ) {
+			$title = Title::newFromText( $pageName );
+			if ( !$title ) {
+				$this->dieWithError( [ 'apierror-invalidtitle', wfEscapeWikiText( $pageName ) ] );
+			}
+
+			$extractor = new ParagraphExtractor( $title );
+			$foundParagraphs = $extractor->findSnippet( $textToFind );
+			if ( $foundParagraphs ) {
+				$title->setFragment( 'p' . $foundParagraphs );
+				$found[] = $title->getFullText();
+			} else {
+				$notFound[] = $title->getFullText();
+			}
+
 		}
 
 		$r = [
-			'response' => $response,
-			'service' => $query->getServiceName()
+			'found' => $found,
+			'notfound' => $notFound
 		];
 		$this->getResult()->addValue( 'query', $this->getModuleName(), $r );
 	}
@@ -63,25 +91,14 @@ class ApiQueryAskAI extends ApiQueryBase {
 		return true;
 	}
 
-	/** @inheritDoc */
-	public function needsToken() {
-		return 'csrf';
-	}
-
 	/**
 	 * @inheritDoc
 	 */
 	public function getAllowedParams() {
 		return [
-			'aiprompt' => [
+			'json' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => true
-			],
-			'aiinstructions' => [
-				ParamValidator::PARAM_TYPE => 'string'
-			],
-			'aicontextpages' => [
-				ParamValidator::PARAM_TYPE => 'string'
 			]
 		];
 	}
@@ -91,11 +108,8 @@ class ApiQueryAskAI extends ApiQueryBase {
 	 */
 	protected function getExamplesMessages() {
 		return [
-			'action=query&prop=askai&token=123ABC&aiprompt=What+is+Pi'
-				=> 'apihelp-query+askai-example',
-			'action=query&prop=askai&token=123ABC&' .
-				'aiprompt=What+is+circumference+of+circle+with+radius+1&aiinstructions=Assume+that+Pi+is+4.'
-				=> 'apihelp-query+askai-example-instructions'
+			'action=query&prop=findparagraph&token=123ABC&json=PAYLOAD'
+				=> 'apihelp-query+findparagraph-example',
 		];
 	}
 }

@@ -7,7 +7,9 @@
 
 	"apihelp-query+askai-param-aiprompt": "{{doc-apihelp-param|query+askai|prompt}}",
 	"apihelp-query+askai-param-aiinstructions": "{{doc-apihelp-param|query+askai|instructions}}",
+	"apihelp-query+askai-param-aicontextpages": "{{doc-apihelp-param|query+askai|aicontextpages}}",
 	"apihelp-query+askai-example": "{{doc-apihelp-example|query+askai}}",
 	"apihelp-query+askai-example-instructions": "{{doc-apihelp-example|query+askai}}",
-	"apihelp-query+askai-summary": "{{doc-apihelp-description|query+askai}}"
+	"apihelp-query+askai-summary": "{{doc-apihelp-description|query+askai}}",
+	"apihelp-query+findparagraph-example": "{{doc-apihelp-example|query+findparagraph}}"
 }
