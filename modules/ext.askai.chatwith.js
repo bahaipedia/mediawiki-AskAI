@@ -130,7 +130,7 @@ $( function () {
 			formatversion: 2,
 			action: 'query',
 			prop: 'askai',
-			aiinstructions: mw.msg( 'askai-chatwith-instructions' ),
+			aiinstructionspage: 'askai-chatwith-instructions',
 			aiprompt: pageNames.join( '\n' )
 		};
 		return api.postWithToken( 'csrf', q ).then( ( ret ) => {

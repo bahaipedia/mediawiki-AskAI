@@ -88,8 +88,16 @@ class AIQuery {
 	 * Set preferences on how AI should respond, e.g. "You are a research assistant".
 	 * @param string $instructions
 	 */
-	public function setInstructions( $instructions ) {
+	public function setInstructionsText( $instructions ) {
 		$this->instructions = $instructions;
+	}
+
+	/**
+	 * Set AI instructions to contents of MediaWiki:Something message.
+	 * @param string $msgName
+	 */
+	public function setInstructionsMessage( $msgName ) {
+		$this->instructions = wfMessage( $msgName )->plain();
 	}
 
 	/**

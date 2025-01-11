@@ -44,7 +44,12 @@ class ApiQueryAskAI extends ApiQueryBase {
 		}
 
 		$query = new AIQuery( $user );
-		$query->setInstructions( $params['aiinstructions'] );
+		if ( $params['aiinstructionspage'] ) {
+			$query->setInstructionsMessage( $params['aiinstructionspage'] );
+		} else {
+			$query->setInstructionsText( $params['aiinstructions'] );
+		}
+
 		$query->setContextPages( explode( '|', $params['aicontextpages'] ) );
 		$response = $query->send( $params['aiprompt'] );
 		if ( $response === null ) {
@@ -79,6 +84,13 @@ class ApiQueryAskAI extends ApiQueryBase {
 			],
 			'aiinstructions' => [
 				ParamValidator::PARAM_TYPE => 'string'
+			],
+			'aiinstructionspage' => [
+				ParamValidator::PARAM_TYPE => [
+					'askai-default-instructions',
+					'askai-chatwith-instructions'
+
+				]
 			],
 			'aicontextpages' => [
 				ParamValidator::PARAM_TYPE => 'string'

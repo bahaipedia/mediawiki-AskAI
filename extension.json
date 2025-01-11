@@ -85,7 +85,6 @@
 				"mobile"
 			],
 			"messages": [
-				"askai-default-instructions",
 				"askai-source",
 				"askai-submit-failed"
 			],
@@ -158,7 +157,6 @@
 			],
 			"messages": [
 				"askai-chatwith-button",
-				"askai-chatwith-instructions",
 				"askai-excluded-pages",
 				"askai-included-pages",
 				"askai-progress-findpar",

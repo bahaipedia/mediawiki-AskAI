@@ -22,8 +22,7 @@ $( function () {
 		const prompt = $prompt.val();
 		$prompt.val( '' );
 
-		const instructions = mw.msg( 'askai-default-instructions' ),
-			$todo = showPrompt( prompt );
+		const $todo = showPrompt( prompt );
 
 		api.postWithToken( 'csrf', {
 			format: 'json',
@@ -31,7 +30,7 @@ $( function () {
 			action: 'query',
 			prop: 'askai',
 			aiprompt: prompt,
-			aiinstructions: instructions,
+			aiinstructionspage: 'askai-default-instructions',
 			aicontextpages: pageNames.join( '|' )
 		} ).done( function ( ret ) {
 			showResponse( $todo, ret.query.askai.response, true );
