@@ -108,7 +108,7 @@ class ApiQueryFindParagraph extends ApiQueryBase {
 	 */
 	protected function getExamplesMessages() {
 		return [
-			'action=query&prop=findparagraph&token=123ABC&json=PAYLOAD'
+			'action=query&prop=findparagraph&fpjson=PAYLOAD'
 				=> 'apihelp-query+findparagraph-example',
 		];
 	}
