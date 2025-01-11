@@ -92,11 +92,11 @@ $( function () {
 				return mw.askai.findparInPages( snippets );
 			} ).then( ( foundPages ) => {
 				if ( !foundPages.length ) {
-					displayProgress( mw.msg( 'askai-progress-findpar-all-empty' ) );
+					displayProgress( mw.msg( 'askai-progress-findpar-empty' ) );
 					return;
 				}
 
-				displayProgress( mw.msg( 'askai-progress-findpar-all-ok',
+				displayProgress( mw.msg( 'askai-progress-findpar-ok',
 					mw.html.escape( foundPages.join( ', ' ) ) ) );
 
 				const specialTitle = new mw.Title( 'Special:AI' ),
