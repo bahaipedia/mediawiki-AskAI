@@ -45,11 +45,16 @@ class AIQuery {
 	/** @var LoggerInterface */
 	protected $logger;
 
-	/** @var string */
-	protected $instructions = '';
+	/** @var string E.g. "assume Pi to be 4" */
+	protected $instructionsText;
 
-	/** @var string[] */
-	protected $contextExtracts = [];
+	/** @var string E.g. "askai-default-instructions". */
+	protected $instructionsMessageName;
+
+	/**
+	 * @var string[] E.g. [ 'First page#p1-7,10-12,15', 'Another page#p5', 'Page 3' ].
+	 */
+	protected $contextPages;
 
 	/** @var Status */
 	protected $status;
@@ -89,7 +94,7 @@ class AIQuery {
 	 * @param string $instructions
 	 */
 	public function setInstructionsText( $instructions ) {
-		$this->instructions = $instructions;
+		$this->instructionsText = $instructions;
 	}
 
 	/**
@@ -97,7 +102,7 @@ class AIQuery {
 	 * @param string $msgName
 	 */
 	public function setInstructionsMessage( $msgName ) {
-		$this->instructions = wfMessage( $msgName )->plain();
+		$this->instructionsMessageName = $msgName;
 	}
 
 	/**
@@ -106,10 +111,21 @@ class AIQuery {
 	 * @param string[] $pageNames E.g. [ 'First page#p1-7,10-12,15', 'Another page#p5', 'Page 3' ].
 	 */
 	public function setContextPages( $pageNames ) {
+		$this->contextPages = $pageNames;
+	}
+
+	/**
+	 * Obtain quotes from all context pages (requested paragraphs only).
+	 * @return string[]
+	 */
+	protected function getContextExtracts() {
+		if ( !$this->contextPages ) {
+			return [];
+		}
+
 		// Obtain text of all pages. If paragraphs are specified, only these paragraphs are used.
 		$extracts = [];
-
-		foreach ( $pageNames as $idx => $pageName ) {
+		foreach ( $this->contextPages as $idx => $pageName ) {
 			$title = Title::newFromText( $pageName );
 			if ( !$title ) {
 				continue;
@@ -129,7 +145,7 @@ class AIQuery {
 			}
 		}
 
-		$this->contextExtracts = $extracts;
+		return $extracts;
 	}
 
 	/**
@@ -143,9 +159,21 @@ class AIQuery {
 			return null;
 		}
 
-		$instructions = $this->instructions;
-		if ( $this->contextExtracts ) {
-			$instructions .= "\n\n" . implode( "\n\n", $this->contextExtracts );
+		$logInfo = [
+			'prompt' => $prompt
+		];
+		$instructions = '';
+		if ( $this->instructionsMessageName ) {
+			$instructions = wfMessage( $this->instructionsMessageName )->plain();
+			$logInfo['instructionspage'] = $this->instructionsMessageName;
+		} elseif ( $this->instructionsText ) {
+			$logInfo['instructions'] = $this->instructionsText;
+		}
+
+		$contextExtracts = $this->getContextExtracts();
+		if ( $contextExtracts ) {
+			$instructions .= "\n\n" . implode( "\n\n", $contextExtracts );
+			$logInfo['contextpages'] = $this->contextPages;
 		}
 
 		$response = $this->service->query(
@@ -153,17 +181,17 @@ class AIQuery {
 			$instructions,
 			$this->status
 		);
+		if ( $this->status->isOK() ) {
+			$logInfo['response'] = $response ?? '(null)';
+		} else {
+			$logInfo['error'] = $this->status->getMessage()->plain();
+		}
 
-		$this->logger->error( 'AskAI: query by User:{user} ({ip}): {params}',
+		$this->logger->info( 'AskAI: query by User:{user} ({ip}): {params}',
 			[
 				'user' => $this->user->getName(),
 				'ip' => $this->user->getRequest()->getIP(),
-				'params' => FormatJson::encode( [
-					'prompt' => $prompt,
-					'error' => $this->status->isOK() ? '' : $this->status->getMessage()->plain(),
-					'response' => $response ?? '',
-					'instructions' => $instructions
-				] )
+				'params' => FormatJson::encode( $logInfo )
 			]
 		);
 

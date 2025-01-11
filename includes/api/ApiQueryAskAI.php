@@ -46,11 +46,14 @@ class ApiQueryAskAI extends ApiQueryBase {
 		$query = new AIQuery( $user );
 		if ( $params['aiinstructionspage'] ) {
 			$query->setInstructionsMessage( $params['aiinstructionspage'] );
-		} else {
+		} elseif ( $params['aiinstructions'] ) {
 			$query->setInstructionsText( $params['aiinstructions'] );
 		}
 
-		$query->setContextPages( explode( '|', $params['aicontextpages'] ) );
+		if ( $params['aicontextpages'] ) {
+			$query->setContextPages( explode( '|', $params['aicontextpages'] ) );
+		}
+
 		$response = $query->send( $params['aiprompt'] );
 		if ( $response === null ) {
 			$this->dieStatus( $query->getStatus() );
