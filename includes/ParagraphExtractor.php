@@ -24,7 +24,9 @@
 namespace MediaWiki\AskAI;
 
 use DOMDocument;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use Psr\Log\LoggerInterface;
 use Title;
 use Wikimedia\ScopedCallback;
 
@@ -40,10 +42,16 @@ class ParagraphExtractor {
 		// assuming it to be an overly common word/expression.
 		'partInTooManyParagraphs' => 5,
 
-		// If findText() found more paragraphs than this, discard all matches as uncertain,
+		// If findSnippet() found more paragraphs than this, log it as warning.
+		'logIfParagraphCountIsGreaterThan' => 7,
+
+		// If findSnippet() found more paragraphs than this, discard all matches as uncertain,
 		// assuming that the snippet was generated from a list or table, not a continuous paragraph.
-		'entireSnippetInTooManyParagraphs' => 12
+		'discardIfParagraphCountIsGreaterThan' => 12
 	];
+
+	/** @var LoggerInterface */
+	protected $logger;
 
 	/** @var Title */
 	protected $title;
@@ -53,6 +61,7 @@ class ParagraphExtractor {
 	 */
 	public function __construct( Title $title ) {
 		$this->title = $title;
+		$this->logger = LoggerFactory::getInstance( 'FindParagraph' );
 	}
 
 	/**
@@ -227,41 +236,65 @@ class ParagraphExtractor {
 			}
 
 			if ( $limit++ > self::LIMITS['recursionCalls'] ) {
-				// console.log( 'findpar.js: Depth limit reached.' );
+				// Depth limit reached.
 				break;
 			}
 		}
 
 		// Get all paragraph numbers (sorted and unique).
 		$parNumbers = [];
+		$debugInfo = [];
 		foreach ( $results as $result ) {
 			$parNumbers = array_merge( $parNumbers, $result['parNumbers'] );
-			// console.log( 'findpar.js: found paragraphs: query=' + result.query +
-			//	', parNumbers=[' + result.parNumbers.join( ',' ) +
-			//	'], leftoverWords=' + result.leftoverWords );
+			$debugInfo[] = "\n\tfound paragraphs: query=\"" . $result['query'] .
+				'\", parNumbers=[' . implode( ',', $result['parNumbers'] ) .
+				'], leftoverWords="' . implode( ',', $result['leftoverWords'] ) . '"';
 		}
 		$parNumbers = array_unique( $parNumbers );
 		sort( $parNumbers );
+		$packedParNumbers = $this->packParNumbers( $parNumbers );
 
-		if ( count( $parNumbers ) > self::LIMITS['entireSnippetInTooManyParagraphs'] ) {
-			// console.log( 'findpar.js: found too many paragraphs (' + results.length +
-			//	'), discarding all matches (they are likely incorrect).' );
-			return '';
+		$count = count( $parNumbers );
+		$logContext = [
+			'title' => $this->title->getPrefixedText(),
+			'textToFind' => $textToFind,
+			'count' => $count,
+			'parNumbers' => $packedParNumbers,
+			'debugInfo' => implode( '', $debugInfo )
+		];
+		$this->logger->info(
+			'findpar: [[{title}]]: looking for "{textToFind}": found in {count} paragraphs: ' .
+				'parNumbers="{parNumbers}". {debugInfo}',
+			$logContext
+		);
+
+		if ( $count > self::LIMITS['logIfParagraphCountIsGreaterThan'] ) {
+			$warningText = 'findpar: [[{title}]]: too many paragraphs found ({count}) when looking for "{textToFind}".';
+
+			$discardResult = ( $count > self::LIMITS['discardIfParagraphCountIsGreaterThan'] );
+			if ( $discardResult ) {
+				$warningText .= ' Result discarded.';
+				$this->logger->error( $warningText, $logContext );
+				return '';
+			}
+
+			$this->logger->warning( $warningText, $logContext );
 		}
 
-		return $this->packParNumbers( $parNumbers );
+		return $packedParNumbers;
 	}
 
 	/**
 	 * Searches $paragraphs for the longest sequence of strings in $words array.
 	 *
 	 * @param string[] $words Full prompt, e.g. [ "Sentence", "consists", "of", "words." ].
-	 * @param string[] $paragraphs Paragraphs to be searched.
+	 * @param array<int,string> $paragraphs Paragraphs to be searched.
 	 * @param string $oldQuery Previously found string, e.g. "Sequential words can form a".
-	 * @return mixed Search result. If not null ("not found"), contains the following keys:
+	 * @return ?array Search result. If not null ("not found"), contains the following keys:
 	 * string query Longest sequence of words from "words" array that have been found.
 	 * string[] paragraphs Paragraphs where "query" was found.
 	 * string[] leftoverWords Remaining words from "words" array that haven't been found yet.
+	 * @phan-return ?array{query:string,paragraphs:array<int,string>,leftoverWords:string[]}
 	 */
 	protected function findWordsRecursive( array $words, array $paragraphs, $oldQuery = '' ) {
 		if ( !$words ) {
