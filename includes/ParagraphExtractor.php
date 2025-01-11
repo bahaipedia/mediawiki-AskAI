@@ -232,12 +232,6 @@ class ParagraphExtractor {
 			}
 		}
 
-		if ( count( $results ) > self::LIMITS['entireSnippetInTooManyParagraphs'] ) {
-			// console.log( 'findpar.js: found too many paragraphs (' + results.length +
-			//	'), discarding all matches (they are likely incorrect).' );
-			return '';
-		}
-
 		// Get all paragraph numbers (sorted and unique).
 		$parNumbers = [];
 		foreach ( $results as $result ) {
@@ -248,6 +242,12 @@ class ParagraphExtractor {
 		}
 		$parNumbers = array_unique( $parNumbers );
 		sort( $parNumbers );
+
+		if ( count( $parNumbers ) > self::LIMITS['entireSnippetInTooManyParagraphs'] ) {
+			// console.log( 'findpar.js: found too many paragraphs (' + results.length +
+			//	'), discarding all matches (they are likely incorrect).' );
+			return '';
+		}
 
 		return $this->packParNumbers( $parNumbers );
 	}
