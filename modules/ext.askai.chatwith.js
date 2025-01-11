@@ -89,34 +89,19 @@ $( function () {
 				displayProgress( pageNames.map( mw.html.escape ).join( '<br>' ) );
 
 				// Download each of the articles and find the paragraphs that have the snippet.
-				return Promise.all(
-					pageNames.map( ( pageName ) => {
-						const $todo2 = displayProgress(
-							mw.msg( 'askai-progress-findpar', mw.html.escape( pageName ) ) );
-
-						return mw.askai.findparInPage(
-							snippets[ pageName ],
-							pageName
-						).then( ( res ) => {
-							$todo2.append( res ? mw.msg( 'askai-progress-findpar-ok', res ) :
-								mw.msg( 'askai-progress-findpar-empty' ) );
-							return res;
-						} );
-					} )
-				);
-			} ).then( ( res ) => {
-				const pages = res.filter( ( x ) => x );
-				if ( !pages.length ) {
+				return mw.askai.findparInPages( snippets );
+			} ).then( ( foundPages ) => {
+				if ( !foundPages.length ) {
 					displayProgress( mw.msg( 'askai-progress-findpar-all-empty' ) );
 					return;
 				}
 
 				displayProgress( mw.msg( 'askai-progress-findpar-all-ok',
-					mw.html.escape( pages.join( ', ' ) ) ) );
+					mw.html.escape( foundPages.join( ', ' ) ) ) );
 
 				const specialTitle = new mw.Title( 'Special:AI' ),
 					url = specialTitle.getUrl( {
-						wpPages: pages.join( '\n' )
+						wpPages: foundPages.join( '\n' )
 					} );
 
 				if ( window.location.href.indexOf( 'redirect=no' ) === -1 ) {

@@ -64,14 +64,17 @@ $( function () {
 			);
 		}
 
-		// Download the article and find the paragraph(s) that contain "matchedText".
-		mw.askai.findparInPage( snippet, pageName ).then( ( pageAndParagraphs ) => {
-			if ( !pageAndParagraphs ) {
+		// Find the paragraph(s) that contain matched text.
+		const snippets = {};
+		snippets[ pageName ] = snippet;
+
+		mw.askai.findparInPages( snippets ).then( ( pageAndParagraphs ) => {
+			if ( !pageAndParagraphs.length ) {
 				showAddPageLink( mw.msg( 'askai-search-add-not-found' ) );
 				return;
 			}
 
-			addedSources.push( pageAndParagraphs );
+			addedSources.push( ...pageAndParagraphs );
 			replaceWithViewLink( $loading );
 		} ).catch( () => {
 			showAddPageLink( mw.msg( 'askai-search-add-failed' ) );

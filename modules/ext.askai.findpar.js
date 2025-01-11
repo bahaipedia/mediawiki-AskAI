@@ -4,28 +4,25 @@
 	mw.askai = mw.askai || {};
 
 	/**
-	 * Search pages for paragraphs that contain "textToFind", return paragraph numbers.
+	 * Search pages for paragraphs that contain certain text, return paragraph numbers.
 	 *
-	 * @param {string} textToFind Arbitrary string, e.g. "Sentence is a sequence of words."
-	 * @param {string} pageName Page in this wiki that should be searched.
-	 * @return {Promise<string>} Resolves into "Page_title#p1-7,10-12,15" or (if failed) "".
+	 * @param {Object} titleToSnippet Text to find in each page, e.g. { "Page 1": "Some sentence" }.
+	 * @return {Promise<string>} Resolves into [ "Page_title#p1-7,10-12,15", ... ].
 	 */
-	mw.askai.findparInPage = function ( textToFind, pageName ) {
+	mw.askai.findparInPages = function ( titleToSnippet ) {
 		const $d = $.Deferred(),
-			api = new mw.Api(),
-			pagesToSearch = {};
+			api = new mw.Api();
 
-		pagesToSearch[ pageName ] = textToFind;
 		api.post( {
 			format: 'json',
 			formatversion: 2,
 			action: 'query',
 			prop: 'findparagraph',
-			fpjson: JSON.stringify( pagesToSearch )
+			fpjson: JSON.stringify( titleToSnippet )
 		} ).done( function ( ret ) {
-			$d.resolve( ret.query.findparagraph.found[ 0 ] || '' );
+			$d.resolve( ret.query.findparagraph.found );
 		} ).fail( function () {
-			$d.resolve( '' );
+			$d.resolve( [] );
 		} );
 
 		return $d.promise();
