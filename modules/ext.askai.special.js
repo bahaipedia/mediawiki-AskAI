@@ -73,12 +73,22 @@ $( function () {
 				return matchedText;
 			}
 
-			// Show the link
-			const title = new mw.Title( linkTarget );
-			const $link = $( '<a>' )
-				.attr( 'href', title.getUrl() )
-				.append( matchedText );
-			return $link[0].outerHTML;
+			// If "linkTarget" includes several paragraphs (e.g. "Name of page#par3-5,8"),
+			// show links to the beginning of each range (in the example above, "3" and "8").
+			const title = new mw.Title( linkTarget ),
+				pageName = title.getPrefixedText();
+
+			let links = [];
+			linkTarget.replace( /^.*#par(.*)$/, '$1' ).split( ',' ).forEach( ( pair ) => {
+				title.fragment = 'par' + pair.split( '-' )[0];
+				const $link = $( '<a>' )
+					.attr( 'href', title.getUrl() )
+					.append( pageName + '#' + title.fragment );
+
+				links.push( $link[0].outerHTML );
+			} );
+
+			return '(' + links.join( ', ' ) + ')';
 		} );
 
 		const $answer = $( '<p>' ).attr( 'class', 'mw-askai-answer' ).append( responseText );
