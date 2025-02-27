@@ -67,26 +67,35 @@ $( function () {
 		// that were listed in the field "List of wiki pages".
 
 		responseText = responseText.replace( /\((?:Source #)?([0-9]+)\)/g, function ( matchedText, sourceNumber ) {
-			const linkTarget = pageNames[sourceNumber - 1];
-			if ( !linkTarget ) {
+			const source = pageNames[ sourceNumber - 1 ];
+			if ( !source ) {
 				// Some unrelated number (either 0 or greater than the number of page names).
 				return matchedText;
 			}
 
-			// If "linkTarget" includes several paragraphs (e.g. "Name of page#par3-5,8"),
-			// show links to the beginning of each range (in the example above, "3" and "8").
-			const title = new mw.Title( linkTarget ),
+			const title = new mw.Title( source ),
 				pageName = title.getPrefixedText();
 
-			let links = [];
-			linkTarget.replace( /^.*#par(.*)$/, '$1' ).split( ',' ).forEach( ( pair ) => {
-				title.fragment = 'par' + pair.split( '-' )[0];
-				const $link = $( '<a>' )
-					.attr( 'href', title.getUrl() )
-					.append( pageName + '#' + title.fragment );
+			const linkTargets = []; // [ 'Page#par3', 'Page#par8' ]
+			if ( !title.fragment ) {
+				// No paragraph numbers, so we link to the entire page.
+				linkTargets.push( pageName );
+			} else {
+				// When "source" includes several paragraphs (e.g. "Name of page#par3-5,8"),
+				// show links to the beginning of each range (in this example, "3" and "8").
+				title.fragment.replace( /^par(.*)$/, '$1' ).split( ',' ).forEach( ( pair ) => {
+					const startAnchor = 'par' + pair.split( '-' )[ 0 ];
+					linkTargets.push( pageName + '#' + startAnchor );
+				} );
+			}
 
-				links.push( $link[0].outerHTML );
-			} );
+			const links = [];
+			for ( const linkTarget of linkTargets ) {
+				const $link = $( '<a>' )
+					.attr( 'href', ( new mw.Title( linkTarget ) ).getUrl() )
+					.append( linkTarget );
+				links.push( $link[ 0 ].outerHTML );
+			}
 
 			return '(' + links.join( ', ' ) + ')';
 		} );
