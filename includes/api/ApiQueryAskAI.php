@@ -113,7 +113,7 @@ class ApiQueryAskAI extends ApiQueryBase {
 				=> 'apihelp-query+askai-example-instructions',
 			'action=query&prop=askai&token=123ABC&aiprompt=What+is+ciPi&aiinstructionspage=Some+message.'
 				=> 'apihelp-query+askai-example-instructionspage',
-			'action=query&prop=askai&token=123ABC&aiprompt=List+&aicontextpages=Title1|Title2#p123|Title#p2,4-7'
+			'action=query&prop=askai&token=123ABC&aiprompt=List+&aicontextpages=Title1|Title2#par123|Title#par2,4-7'
 				=> 'apihelp-query+askai-example-contextpages'
 		];
 	}

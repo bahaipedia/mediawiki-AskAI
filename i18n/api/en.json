@@ -8,7 +8,7 @@
 	"apihelp-query+askai-param-aiprompt": "Question that should be answered by AI.",
 	"apihelp-query+askai-param-aiinstructions": "Optional instructions on how AI should answer (assumptions, output format, etc.).",
 	"apihelp-query+askai-param-aiinstructionspage": "Interface message that should be used as instructions for AI.",
-	"apihelp-query+askai-param-aicontextpages": "Optional list of paragraphs (e.g. Name of page#p3,5-7) that should be quoted to AI at the end of instructions.",
+	"apihelp-query+askai-param-aicontextpages": "Optional list of paragraphs (e.g. Name of page#par3,5-7) that should be quoted to AI at the end of instructions.",
 	"apihelp-query+askai-example": "Get AI response to the question.",
 	"apihelp-query+askai-example-contextpages": "Quote several pages/paragraphs to AI at the end of instructions.",
 	"apihelp-query+askai-example-instructions": "Ask AI to calculate circumference, but instruct it to assume that the value of Pi is 4.",

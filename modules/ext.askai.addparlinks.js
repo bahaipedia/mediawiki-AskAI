@@ -5,7 +5,7 @@ $( function () {
 	$( '.mw-parser-output > p' ).each( function ( idx, elem ) {
 		$( elem ).prepend( $( '<span>' )
 			.attr( 'class', 'showsectionlink' )
-			.attr( 'id', 'p' + idx )
+			.attr( 'id', 'par' + idx )
 		);
 	} );
 } );

@@ -7,7 +7,7 @@
 	 * Search pages for paragraphs that contain certain text, return paragraph numbers.
 	 *
 	 * @param {Object} titleToSnippet Text to find in each page, e.g. { "Page 1": "Some sentence" }.
-	 * @return {Promise<string>} Resolves into [ "Page_title#p1-7,10-12,15", ... ].
+	 * @return {Promise<string>} Resolves into [ "Page_title#par1-7,10-12,15", ... ].
 	 */
 	mw.askai.findparInPages = function ( titleToSnippet ) {
 		const $d = $.Deferred(),

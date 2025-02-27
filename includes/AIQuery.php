@@ -52,7 +52,7 @@ class AIQuery {
 	protected $instructionsMessageName;
 
 	/**
-	 * @var string[] E.g. [ 'First page#p1-7,10-12,15', 'Another page#p5', 'Page 3' ].
+	 * @var string[] E.g. [ 'First page#par1-7,10-12,15', 'Another page#par5', 'Page 3' ].
 	 */
 	protected $contextPages;
 
@@ -107,8 +107,8 @@ class AIQuery {
 
 	/**
 	 * Choose several pages to be quoted at the end of AI instructions.
-	 * If page name has an anchor like "#p2,4-6,9", only these paragraphs are included.
-	 * @param string[] $pageNames E.g. [ 'First page#p1-7,10-12,15', 'Another page#p5', 'Page 3' ].
+	 * If page name has an anchor like "#par2,4-6,9", only these paragraphs are included.
+	 * @param string[] $pageNames E.g. [ 'First page#par1-7,10-12,15', 'Another page#par5', 'Page 3' ].
 	 */
 	public function setContextPages( $pageNames ) {
 		$this->contextPages = $pageNames;
@@ -132,7 +132,7 @@ class AIQuery {
 			}
 
 			$parNumbers = '';
-			if ( preg_match( '/^p([0-9\-,]+)$/', $title->getFragment(), $matches ) ) {
+			if ( preg_match( '/^par([0-9\-,]+)$/', $title->getFragment(), $matches ) ) {
 				$parNumbers = $matches[1];
 			}
 

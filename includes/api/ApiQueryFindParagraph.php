@@ -71,7 +71,7 @@ class ApiQueryFindParagraph extends ApiQueryBase {
 			$extractor = new ParagraphExtractor( $title );
 			$foundParagraphs = $extractor->findSnippet( $textToFind );
 			if ( $foundParagraphs ) {
-				$title->setFragment( 'p' . $foundParagraphs );
+				$title->setFragment( 'par' . $foundParagraphs );
 				$found[] = $title->getFullText();
 			} else {
 				$notFound[] = $title->getFullText();
