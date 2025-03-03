@@ -108,9 +108,11 @@ $( function () {
 		// convert them into clickable links to the articles/paragraphs
 		// that were listed in the field "List of wiki pages".
 
-		responseText = responseText.replace( /\((?:Source #)?([0-9]+)\)/g, function ( matchedText, sourceNumber ) {
+		const replaceFunc = function ( matchedText, sourceNumber ) {
 			return getLinkToSource( sourceNumber ) || matchedText;
-		} );
+		};
+		responseText = responseText.replace( /Source #([0-9]+)/g, replaceFunc );
+		responseText = responseText.replace( /\(([0-9]+)\)/g, replaceFunc );
 
 		const $answer = $( '<p>' ).attr( 'class', 'mw-askai-answer' ).append( responseText );
 		$todo.removeClass( 'mw-askai-prompt-loading' )
