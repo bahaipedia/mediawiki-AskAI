@@ -69,31 +69,37 @@ $( function () {
 			return false;
 		}
 
-		const title = new mw.Title( source ),
-			pageName = title.getPrefixedText();
+		// Wanted format of the links: (Source #1, par 1, 4, 7)
+		// Here "1", "4" and "7" are 3 separate links to paragraphs 1, 4 and 7.
+		const sourceName = mw.msg( 'askai-source', sourceNumber );
 
-		const linkTargets = []; // [ 'Page#par3', 'Page#par8' ]
+		const title = new mw.Title( source );
 		if ( !title.fragment ) {
 			// No paragraph numbers, so we link to the entire page.
-			linkTargets.push( pageName );
-		} else {
-			// When "source" includes several paragraphs (e.g. "Name of page#par3-5,8"),
-			// show links to the beginning of each range (in this example, "3" and "8").
-			title.fragment.replace( /^par(.*)$/, '$1' ).split( ',' ).forEach( ( pair ) => {
-				const startAnchor = 'par' + pair.split( '-' )[ 0 ];
-				linkTargets.push( pageName + '#' + startAnchor );
-			} );
+			return '(' + makeLink( title, sourceName ) + ')';
 		}
 
+		// When "source" includes several paragraphs (e.g. "Name of page#par3-5,8"),
+		// show links to the beginning of each range (in this example, "3" and "8").
 		const links = [];
-		for ( const linkTarget of linkTargets ) {
-			const $link = $( '<a>' )
-				.attr( 'href', ( new mw.Title( linkTarget ) ).getUrl() )
-				.append( linkTarget );
-			links.push( $link[ 0 ].outerHTML );
-		}
+		title.fragment.replace( /^par(.*)$/, '$1' ).split( ',' ).forEach( ( pair ) => {
+			title.fragment = 'par' + pair.split( '-' )[ 0 ];
+			links.push( makeLink( title, pair ) );
+		} );
 
-		return '(' + links.join( ', ' ) + ')';
+		return '(' + sourceName + ', ' + mw.msg( 'askai-source-paragraph' ) + ' ' + links.join( ', ' ) + ')';
+	}
+
+	/**
+	 * Helper method used by getLinkToSource(), returns HTML of one link.
+	 *
+	 * @param {mw.Title} mwTitle
+	 * @param {string} text
+	 * @return {string}
+	 */
+	function makeLink( mwTitle, text ) {
+		const $link = $( '<a>' ).attr( 'href', mwTitle.getUrl() ).append( text );
+		return $link[ 0 ].outerHTML;
 	}
 
 	/**

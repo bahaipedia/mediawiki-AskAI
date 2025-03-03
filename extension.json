@@ -85,8 +85,9 @@
 				"mobile"
 			],
 			"messages": [
+				"askai-submit-failed",
 				"askai-source",
-				"askai-submit-failed"
+				"askai-source-paragraph"
 			],
 			"dependencies": [
 				"mediawiki.api",
