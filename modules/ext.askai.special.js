@@ -76,7 +76,7 @@ $( function () {
 		const title = new mw.Title( source );
 		if ( !title.fragment ) {
 			// No paragraph numbers, so we link to the entire page.
-			return '(' + makeLink( title, sourceName ) + ')';
+			return makeLink( title, sourceName );
 		}
 
 		// When "source" includes several paragraphs (e.g. "Name of page#par3-5,8"),
@@ -87,7 +87,7 @@ $( function () {
 			links.push( makeLink( title, pair ) );
 		} );
 
-		return '(' + sourceName + ', ' + mw.msg( 'askai-source-paragraph' ) + ' ' + links.join( ', ' ) + ')';
+		return sourceName + ', ' + mw.msg( 'askai-source-paragraph' ) + ' ' + links.join( ', ' );
 	}
 
 	/**
@@ -115,7 +115,19 @@ $( function () {
 		// that were listed in the field "List of wiki pages".
 
 		const replaceFunc = function ( matchedText, sourceNumber ) {
-			return getLinkToSource( sourceNumber ) || matchedText;
+			let link = getLinkToSource( sourceNumber );
+			if ( !link ) {
+				return matchedText;
+			}
+
+			if ( matchedText.startsWith( '(' ) ) {
+				link = '(' + link;
+			}
+			if ( matchedText.endsWith( ')' ) ) {
+				link += ')';
+			}
+
+			return link;
 		};
 		responseText = responseText.replace( /Source #([0-9]+)/g, replaceFunc );
 		responseText = responseText.replace( /\(([0-9]+)\)/g, replaceFunc );
