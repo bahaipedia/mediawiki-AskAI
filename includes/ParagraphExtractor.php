@@ -107,6 +107,13 @@ class ParagraphExtractor {
 
 		$innerText = [];
 		foreach ( $doc->getElementsByTagName( 'p' ) as $element ) {
+			if ( $element->parentNode->tagName !== 'body' ) {
+				// Numbers are only added to top-level paragraphs (".mw-parser-output > p").
+				// We ignore paragraphs inside <div>, etc., because they most likely
+				// belong to infoboxes and navigation templates, not to the article itself.
+				continue;
+			}
+
 			// We only want the text of this paragraph (without any HTML tags inside).
 			$innerText[] = trim( $element->textContent );
 		}
