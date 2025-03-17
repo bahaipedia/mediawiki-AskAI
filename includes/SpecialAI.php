@@ -42,11 +42,11 @@ class SpecialAI extends FormSpecialPage {
 	/** @inheritDoc */
 	protected function getFormFields() {
 		return [
-			'Pages' => [
-				'type' => 'textarea',
-				'rows' => 3,
-				'label-message' => 'askai-field-pages',
-				'required' => true
+			'Prompt' => [
+				'type' => 'textwithbutton',
+				'label-message' => 'askai-field-prompt',
+				'required' => true,
+				'buttondefault' => $this->msg( 'askai-submit' )->plain()
 			],
 			'Response' => [
 				'type' => 'textarea',
@@ -54,11 +54,11 @@ class SpecialAI extends FormSpecialPage {
 				'label-message' => 'askai-field-response',
 				'readonly' => true
 			],
-			'Prompt' => [
-				'type' => 'textwithbutton',
-				'label-message' => 'askai-field-prompt',
-				'required' => true,
-				'buttondefault' => $this->msg( 'askai-submit' )->plain()
+			'Pages' => [
+				'type' => 'textarea',
+				'rows' => 5,
+				'label-message' => 'askai-field-pages',
+				'required' => true
 			]
 		];
 	}

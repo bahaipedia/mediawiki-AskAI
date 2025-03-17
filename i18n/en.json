@@ -15,7 +15,7 @@
 	"askai-default-instructions": "You are a research assistant. The user will provide you with a list of quotes from various historical documents. Your task is to use only the information provided in your reply to the user. Do not use any external information in your reply. Do not hallucinate facts that are not provided in the text below. The format of the source documents will be (Source #) [Page title] followed by the document text. In your replies any time you reference a fact list the source number in parenthesis at the end of the sentence. The user has provided the following source material:",
 	"askai-desc": "Provides [[Special:AI]], which allows user to make AI queries about content of articles in this wiki.",
 	"askai-excluded-pages": "Excluded content:",
-	"askai-field-pages": "List of wiki pages (and paragraphs in them) to be analyzed by the AI:",
+	"askai-field-pages": "Response will be based on the following wiki pages/paragraphs (you can edit this list):",
 	"askai-field-prompt": "Question to ask:",
 	"askai-field-response": "Response from the AI:",
 	"askai-included-pages": "Included content:",
