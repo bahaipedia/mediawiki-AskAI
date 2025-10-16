@@ -22,6 +22,7 @@
 	"askai-openai-not-configured": "Error message if OpenAI API key, etc. are not configured.",
 	"askai-progress-findpar-empty": "Not Found message after scanning all pages for paragraphs.",
 	"askai-progress-findpar-ok": "Success message after scanning all pages for paragraphs.",
+	"askai-progress-header": "Text on top of the page that shows progress messages about AI narrowing down the search results.",
 	"askai-progress-narrow": "Progress message before asking AI to narrow down search results.",
 	"askai-progress-narrow-empty": "Not Found message after asking AI to narrow down search results.",
 	"askai-progress-narrow-ok": "Success message if AI narrowed down search results. $1 - number of results (integer).",

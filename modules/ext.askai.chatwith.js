@@ -7,7 +7,7 @@ $( function () {
 	}
 
 	const api = new mw.Api();
-	let $loading;
+	let isLoading;
 
 	// Add "Chat with AI" button.
 	const $chatButton = $submit.clone()
@@ -25,10 +25,13 @@ $( function () {
 	 * @return {jQuery} Newly added element.
 	 */
 	function displayProgress( html ) {
-		if ( !$loading ) {
+		if ( !isLoading ) {
 			// Replace current page with the loading screen.
-			$loading = $( '<h1>' ).text( mw.msg( 'askai-chatwith-button' ) );
-			mw.util.$content.empty().append( $loading );
+			isLoading = true;
+			mw.util.$content.empty().append(
+				$( '<h1>' ).text( mw.msg( 'askai-chatwith-button' ) ),
+				$( '<p>' ).text( mw.msg( 'askai-progress-header' ) )
+			);
 		}
 
 		return $( '<p>' ).append( html, ' ' ).appendTo( mw.util.$content );

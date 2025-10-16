@@ -22,6 +22,7 @@
 	"askai-openai-not-configured": "Error: OpenAI not configured: apiKey, apiUrl or model are not set.",
 	"askai-progress-findpar-empty": "Paragraph numbers not found in any of the titles.",
 	"askai-progress-findpar-ok": "Found relevant pages and paragraphs: $1.",
+	"askai-progress-header": "Please wait while the AI selects relevant pages...",
 	"askai-progress-narrow": "Asking AI to narrow down $1 search results...",
 	"askai-progress-narrow-empty": "AI hasn't found any relevant pages.",
 	"askai-progress-narrow-ok": "selected $1 pages.",
