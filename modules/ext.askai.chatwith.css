@@ -3,3 +3,9 @@
 .oo-ui-actionFieldLayout .oo-ui-actionFieldLayout-button .oo-ui-buttonElement-framed > .oo-ui-buttonElement-button.mw-askai-chatwith {
 	margin-left: 0.5em;
 }
+
+.mw-chatwith-header:before {
+	margin-right: 0.5em;
+	content: url( images/loading16x16.gif );
+}
+

@@ -30,7 +30,7 @@ $( function () {
 			isLoading = true;
 			mw.util.$content.empty().append(
 				$( '<h1>' ).text( mw.msg( 'askai-chatwith-button' ) ),
-				$( '<p>' ).text( mw.msg( 'askai-progress-header' ) )
+				$( '<p>' ).addClass( 'mw-chatwith-header' ).text( mw.msg( 'askai-progress-header' ) )
 			);
 		}
 
